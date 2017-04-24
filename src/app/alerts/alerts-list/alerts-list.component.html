@@ -1,0 +1,74 @@
+<div class="container-fluid">
+    <div class="mrow">
+        <div class="col-md-12">
+            <div class="input-group search">
+                <input type="text" class="form-control" placeholder="Search Alerts" aria-describedby="basic-addon2" [(ngModel)]="searchRequest.query.query_string.query" (keyup.enter)="onSearch()">
+                <span class="input-group-addon" id="basic-addon2" (click)="onSearch()"></span>
+            </div>
+        </div>
+    </div>
+    <div class="mrow">
+        <div class="col-md-10">
+            <span class="col-form-label-lg"> Alerts ({{alerts.length}} of {{paginationParams.total}}) </span>
+            <button *ngFor="let filter of filters" class="filter-button btn btn-primary" (click)="removeFilter(filter.field)" type="button">x {{ filter.field }}</button>
+        </div>
+        <div class="col-md-2">
+            <div class="dropdown pull-right">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    ACTIONS
+                </button>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuButton">
+                    <span class="dropdown-item" [class.disabled]="selectedAlerts.length == 0" (click)="processOpen()">Open</span>
+                    <span class="dropdown-item" [class.disabled]="selectedAlerts.length == 0" (click)="processDismiss()">Dismiss</span>
+                    <span class="dropdown-item" [class.disabled]="selectedAlerts.length == 0" (click)="processEscalate()">Escalate</span>
+                    <span class="dropdown-item" [class.disabled]="selectedAlerts.length == 0" (click)="processResolve()">Resolve</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid nav-content">
+    <div class="row">
+        <div class="col-sm-2">
+            <div class="m-nav">
+                <div class="title"> Filters </div>
+                <metron-collapse *ngFor="let data of filtersData" [data]="getCollapseComponentData(data)"> </metron-collapse>
+            </div>
+        </div>
+        <div class="col-sm-10">
+            <div class="content">
+                <table class="table" metron-config-table [data]="alerts" [cellSelectable]="true" style="white-space: nowrap;">
+                    <thead>
+                    <tr>
+                        <th *ngFor="let column of alertsColumnNames" > <metron-config-sorter [type]="column.type" [sortBy]="column.key"> {{ column.key }}</metron-config-sorter> </th>
+                        <th style="width:2%"><i class="fa fa-cog configure-table-icon" (click)="configureTable()"></i></th>
+                        <th style="width:50px"><input id="select-deselect-all" class="fontawesome-checkbox" type="checkbox" (click)="selectAllRows($event)"><label for="select-deselect-all"></label></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr *ngFor="let alert of alerts" (click)="showDetails($event, alert)" [ngClass]="{'selected' : selectedAlerts.indexOf(alert) != -1}">
+                        <td (click)="addFilter('score', alert.score)"> <div [appAlertSeverity]="alert.score"> {{ alert.score }} </div> </td>
+                        <td> {{ alert.alertId }} </td>
+                        <td><a class="cell-value" (click)="onAddFilter('age', alert.age)"> {{ alert.age }}</a></td>
+                        <td><a class="cell-value" (click)="onAddFilter('source:type', alert.source_type)"> {{ alert.source_type }}</a></td>
+                        <td><a class="cell-value" (click)="onAddFilter('ip_src_addr', alert.ip_src_addr)">{{ alert.ip_src_addr }}</a></td>
+                        <td><a class="cell-value" (click)="onAddFilter('sourceLocation', alert.sourceLocation)">{{ alert.sourceLocation }}</a></td>
+                        <td><a class="cell-value" (click)="onAddFilter('ip_dst_addr', alert.ip_dst_addr)"> {{ alert.ip_dst_addr }}</a></td>
+                        <td><a class="cell-value" (click)="onAddFilter('designatedHost', alert.designatedHost)">{{ alert.designatedHost }}</a></td>
+                        <td><a class="cell-value" (click)="onAddFilter('alert_status', alert.status)">{{ alert.status }}</a></td>
+                        <td></td>
+                        <td><input id="{{ alert.alertId }}" class="fontawesome-checkbox" type="checkbox" name="{{alert.alertId}}" (click)="selectRow($event, alert)" [checked]="selectedAlerts.indexOf(alert) != -1"><label attr.for="{{ alert.alertId }}"></label></td>
+                    </tr>
+                    </tbody>
+                </table>
+                <div clas="row">
+                    <div class="col-md-3 push-md-5">
+                        <metron-table-pagination [(start)]="paginationParams.start" [(end)]="paginationParams.end" [total]="paginationParams.total" (next)="onSearch(false)" (previous)="onSearch(false)"> </metron-table-pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

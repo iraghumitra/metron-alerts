@@ -1,0 +1,7 @@
+<div *ngIf="total > 0">
+  <i *ngIf="start > 0" class="fa fa-chevron-left" aria-hidden="true" (click)="onPrevious()"></i>
+  <i *ngIf="start === 0" class="fa fa-chevron-left disabled" aria-hidden="true"></i>
+  <span> {{start + 1}} - {{total > end ? end : total}} of {{ total }} </span>
+  <i *ngIf="total - end >= 0"  class="fa fa-chevron-right" aria-hidden="true" (click)="onNext()"></i>
+  <i *ngIf="total - end < 0"  class="fa fa-chevron-right disabled" aria-hidden="true"></i>
+</div>

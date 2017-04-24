@@ -1,0 +1,32 @@
+@import "../../../variables.scss";
+
+a {
+  display: block;
+  font-size: 14px;
+  margin: 5px 0px;
+  text-decoration: none;
+  color: $dropdown-link-color;
+
+  &::after {
+    font-family: "FontAwesome";
+    font-style: normal;
+    font-size: 14px;
+    content: '\f106';
+    float: right;
+  }
+}
+
+a.collapsed::after {
+  font-family: "FontAwesome";
+  font-style: normal;
+  font-size: 14px;
+  content: '\f107';
+  float: right;
+}
+
+.list-group-item {
+  border: none;
+  font-size: 13px;
+  background: none;
+  color: $curious-blue;
+}

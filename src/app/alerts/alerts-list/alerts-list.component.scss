@@ -1,0 +1,80 @@
+@import "../../../vendor.scss";
+@import "../../../styles.scss";
+@import "../../../variables.scss";
+
+.mrow {
+  @extend .my-4;
+}
+
+.search {
+  .form-control {
+    @extend .input;
+    border-right: none;
+  }
+
+  &:focus {
+    @extend .input;
+  }
+
+  .form-control + .input-group-addon {
+    cursor: pointer;
+    border: 1px solid $blue-chill !important;
+    background: $icon-button-background;
+
+    &::before {
+      font-family: "FontAwesome";
+      content: '\f002';
+      color: $piction-blue;
+    }
+  }
+}
+
+.btn.severity {
+  padding: 0.25rem 1rem;
+  border-radius: 0rem;
+  background: $mine-shaft-2;
+  border: 1px solid $list-group-border-color;
+
+  &::before {
+    font-family: "FontAwesome";
+    content: '\f111';
+    padding-right: 15px;
+  }
+}
+
+.btn.severity.error::before {
+  color: $errors-red;
+}
+
+.btn.severity.warning::before {
+  color: $warning-yellow;
+}
+
+.btn.severity.info::before {
+  color: $info-yellow;
+}
+
+.btn-group-severity {
+  padding: 10px;
+  background: $mine-shaft-4;
+}
+
+.selected {
+  background: $mine-shaft-2;
+}
+
+
+.cell-value {
+  padding: 5px;
+}
+
+.filter-button {
+  margin-left: 5px;
+  margin-right: 5px;
+  cursor: pointer;
+}
+
+.configure-table-icon {
+  font-size: 16px;
+  cursor: pointer;
+}

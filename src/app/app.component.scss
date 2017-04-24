@@ -1,0 +1,13 @@
+@import "../variables";
+
+.container-fluid
+{
+  min-height: 100vh;
+}
+
+.navbar
+{
+  background: $nav-bar-bg;
+  padding: 0rem 1rem;
+  max-height: 50px;
+  }
