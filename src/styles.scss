@@ -93,27 +93,29 @@ button {
 }
 /* Navcontent Layout */
 .nav-content {
-  .row {
-    flex-wrap: nowrap;
-  }
-  .col-sm-2 {
-    @extend .readonly-bg;
-    min-width: $nav-content-nav-width;
-    max-width: $nav-content-nav-width;
+  padding-right: 0px;
 
-    .m-nav {
-      margin: 15px;
+  .col-fixed-200 {
+    @extend .readonly-bg;
+
+    top: 0px;
+    z-index: 1;
+    height: 100%;
+    width: 200px;
+    position: absolute;
+    padding: 15px;
+
+    .title {
+      font-size: 14px;
+      color: $body-color;
     }
-    .m-nav .title {
-      margin-left: -10px;
+    .m-nav {
+      padding-left: 5px;
     }
   }
-  .col-sm-10 {
-    max-width: 100%;
-    flex: 0 0 calc(100% - #{$nav-content-nav-width + 15px});
-    .content {
-      height: 100%;
-    }
+  .col-offset-200{
+    padding-left:215px;
+    z-index:0;
   }
 }
 
@@ -122,6 +124,16 @@ button {
 .metron-floating-button-bar-1x {
   @extend .pb-3;
   @extend .dialog1x;
+
+  bottom: 0;
+  position: fixed;
+  background: $eden;
+  border-top: 1px solid $blue-mine;
+}
+
+.metron-floating-button-bar-2x {
+  @extend .pb-3;
+  @extend .dialog2x;
 
   bottom: 0;
   position: fixed;

@@ -1,20 +1,24 @@
 import { Component, OnInit, ChangeDetectorRef, DoCheck } from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
+import {Observable} from 'rxjs/Rx';
+
 import {ConfigureTableService} from "../../service/configure-table.service";
 import {SampleData} from '../../model/sample-data';
+import {ALERTS_TABLE_COLS} from '../../utils/constants';
+import {ClusterMetaDataService} from '../../service/cluster-metadata.service';
+import {ColumnMetadata} from '../../model/column-metadata';
 
 export enum AlertState {
   NEW, OPEN, ESCALATE, DISMISS, RESOLVE
 }
 
-export class ConfigureColumns {
-  name: string;
-  type: string;
+export class ColumnMetadataWrapper {
+  columnMetadata: ColumnMetadata;
   selected: boolean;
 
-  constructor(colName: string, columnDataTypeMap: any){
-    this.name = colName;
-    this.type = columnDataTypeMap.type;
+  constructor(columnMetadata: ColumnMetadata, selected: boolean){
+    this.columnMetadata = columnMetadata;
+    this.selected = selected;
   }
 }
 
@@ -26,49 +30,85 @@ export class ConfigureColumns {
 
 export class ConfigureTableComponent implements OnInit {
 
-  allColumns: ConfigureColumns[] = [];
-  alertsColumnNames:string[] = [];
+  allColumns: ColumnMetadataWrapper[] = [];
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute, private configureTableService: ConfigureTableService,
-              private ref: ChangeDetectorRef) { }
-
-  getAllColumnNames() {
-    let columnData = SampleData.getSnortFieldNames();
-    let keys = Object.keys(columnData.mappings.snort_doc.properties);
-    for(let colName of keys ) {
-      this.allColumns.push(new ConfigureColumns(colName, columnData.mappings.snort_doc.properties[colName]));
-    }
-
-    this.allColumns = this.allColumns.sort((col1, col2) => { return col1.name.localeCompare(col2.name)})
-  }
-
-  getConfiguredColumns() {
-    this.configureTableService.getTableColumns().subscribe((colNames: any[]) => {
-      this.alertsColumnNames = colNames.map((colData) => colData['key']);
-    });
-  }
+              private clusterMetaDataService: ClusterMetaDataService) { }
 
   goBack() {
     this.router.navigateByUrl('/alerts-list');
     return false;
   }
 
-  ngOnInit() {
-    this.getConfiguredColumns();
-    this.getAllColumnNames();
-  }
-
-  onTableChanged() {
-    this.configureTableService.onTableChanged();
-  }
-
-  selectColumn(columnName: string, checkbox: HTMLInputElement) {
-    if (checkbox.checked) {
-      this.alertsColumnNames.push(columnName);
-    } else {
-      let index = this.alertsColumnNames.indexOf(columnName);
-      this.alertsColumnNames.splice(index, 1);
+  indexOf(columnMetadata: ColumnMetadata, configuredColumns: ColumnMetadata[]): number {
+    for (let i = 0; i < configuredColumns.length; i++) {
+      if (configuredColumns[i].name === columnMetadata.name) {
+        return i;
+      }
     }
+  }
+
+  indexToInsert(columnMetadata: ColumnMetadata, allColumns: ColumnMetadata[], configuredColumnNames: string[]): number {
+    let i = 0;
+    for ( ;i < allColumns.length; i++) {
+      if (configuredColumnNames.indexOf(allColumns[i].name) === -1 && columnMetadata.name.localeCompare(allColumns[i].name) === -1 ) {
+        break;
+      }
+    }
+    return i;
+  }
+
+  ngOnInit() {
+    Observable.forkJoin(
+      this.clusterMetaDataService.getDefaultColumns(),
+      this.clusterMetaDataService.getColumnMetaData(),
+      this.configureTableService.getConfiguredTableColumns()
+    ).subscribe((response: any) => {
+      this.prepareData(response[0], response[1], response[2]);
+    });
+  }
+
+  onSelectDeselectAll($event) {
+    let checked = $event.target.checked;
+    this.allColumns.forEach(colMetaData => colMetaData.selected = checked);
+  }
+
+  /* Slight variation of insertion sort with bucketing the items in the display order*/
+  prepareData(defaultColumns: ColumnMetadata[], allColumns: ColumnMetadata[], savedColumns: ColumnMetadata[]) {
+    let configuredColumns: ColumnMetadata[] = (savedColumns && savedColumns.length > 0) ?  savedColumns : defaultColumns;
+    let configuredColumnNames: string[] = configuredColumns.map((mData: ColumnMetadata) => mData.name);
+
+    allColumns = allColumns.filter((mData: ColumnMetadata) => configuredColumnNames.indexOf(mData.name) === -1);
+    allColumns = allColumns.sort((mData1: ColumnMetadata, mData2: ColumnMetadata) => {return mData1.name.localeCompare(mData2.name)});
+
+    let sortedConfiguredColumns = JSON.parse(JSON.stringify(configuredColumns));
+    sortedConfiguredColumns = sortedConfiguredColumns.sort((mData1: ColumnMetadata, mData2: ColumnMetadata) => {return mData1.name.localeCompare(mData2.name)});
+
+    while (configuredColumns.length > 0 ) {
+      let columnMetadata = sortedConfiguredColumns.shift();
+
+      let index = this.indexOf(columnMetadata, configuredColumns);
+      let itemsToInsert: any[] = configuredColumns.splice(0, index+1);
+
+
+      let indexInAll = this.indexToInsert(columnMetadata, allColumns, configuredColumnNames);
+      allColumns.splice.apply(allColumns, [indexInAll,0].concat(itemsToInsert));
+    }
+
+    this.allColumns = allColumns.map(mData => { return new ColumnMetadataWrapper(mData, configuredColumnNames.indexOf(mData.name) > -1) });
+  }
+
+  save() {
+    let selectedColumns = this.allColumns.filter((mDataWrapper: ColumnMetadataWrapper) => mDataWrapper.selected)
+                          .map((mDataWrapper: ColumnMetadataWrapper) => mDataWrapper.columnMetadata);
+
+    localStorage.setItem(ALERTS_TABLE_COLS, JSON.stringify(selectedColumns));
+    this.configureTableService.fireTableChanged();
+    this.goBack();
+  }
+
+  selectColumn(columns: ColumnMetadataWrapper) {
+    columns.selected = !columns.selected;
   }
 
   swapUp(index: number) {
