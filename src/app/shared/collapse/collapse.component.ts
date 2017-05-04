@@ -22,7 +22,6 @@ export class CollapseComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.data);
   }
 
 }

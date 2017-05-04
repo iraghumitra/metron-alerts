@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {Router, NavigationStart} from '@angular/router';
+import {Observable} from 'rxjs/Rx';
 
 import {Alert} from '../../model/alert';
 import {AlertService} from '../../service/alert.service';
@@ -8,6 +9,8 @@ import {Filter} from "../../model/filter";
 import {ConfigureTableService} from "../../service/configure-table.service";
 import {WorkflowService} from "../../service/workflow.service";
 import {SampleData} from '../../model/sample-data';
+import {ClusterMetaDataService} from '../../service/cluster-metadata.service';
+import {ColumnMetadata} from '../../model/column-metadata';
 
 const defaultPaginationParams = {start: 0, end: 15, total: 0};
 
@@ -18,21 +21,20 @@ const defaultPaginationParams = {start: 0, end: 15, total: 0};
 })
 export class AlertsListComponent implements OnInit {
 
+  alertsColumns: ColumnMetadata[] = [];
+  alertsColumnsToDisplay: ColumnMetadata[] = [];
+  filtersData = SampleData.getFilters();
   selectedAlerts: Alert[] = [];
-  alerts: Alert[] = [];
-  alertsColumnNames:any[] = [];
+  alerts: any[] = [];
+  colNumberTimerId: number;
+  @ViewChild('table') table: ElementRef;
 
   paginationParams = defaultPaginationParams;
   searchRequest: SearchRequest = { query: { query_string: { query: '*'} }, from: this.paginationParams.start, size: this.paginationParams.end, sort: [{ timestamp: {order : 'desc', ignore_unmapped: true} }], aggs: {}};
   filters: Filter[] = [];
 
-  showConfigureTable: boolean = false;
-  hideGroup: boolean = false;
-  
-  /* Sample Data */
-  filtersData = SampleData.getFilters();
-
-  constructor(private router: Router, private alertsService: AlertService, private configureTableService: ConfigureTableService, private workflowService: WorkflowService) {
+  constructor(private router: Router, private alertsService: AlertService, private configureTableService: ConfigureTableService,
+              private workflowService: WorkflowService, private clusterMetaDataService: ClusterMetaDataService) {
     router.events.subscribe(event => {
       if (event instanceof NavigationStart && event.url === '/alerts-list') {
         this.selectedAlerts = [];
@@ -40,16 +42,70 @@ export class AlertsListComponent implements OnInit {
     });
   }
 
+  addAlertColChangedListner() {
+    this.configureTableService.tableChanged$.subscribe(colChanged => {
+      if (colChanged) {
+        this.getAlertColumnNames();
+      }
+    });
+  }
+
+  getAlertColumnNames() {
+    Observable.forkJoin(
+      this.configureTableService.getConfiguredTableColumns(),
+      this.clusterMetaDataService.getDefaultColumns()
+    ).subscribe((response: any) => {
+      this.prepareData(response[0], response[1]);
+    });
+  }
+
+  getDisplayValue(alert: any, column: any) {
+    let returnValue = '';
+    try {
+      switch(column.name) {
+        case '_id':
+          returnValue = alert[column.name];
+          break;
+        case 'alert_status':
+          returnValue = 'NEW';
+          break;
+        default:
+          returnValue = alert['_source'][column.name];
+          break;
+      }
+
+      if (column.name.endsWith(':ts') || column.name.endsWith('timestamp')) {
+        returnValue = new Date(parseInt(alert['_source'][column.name])).toISOString().replace('T', ' ').slice(0,19);
+      }
+
+    } catch(e) {}
+
+    return returnValue;
+  }
+
+  getSearchValue(alert: any, column: ColumnMetadata) {
+    let returnValue = '';
+    try {
+      switch(column.name) {
+        case '_id':
+          returnValue = alert[column.name];
+          break;
+        case 'alert_status':
+          returnValue = 'NEW';
+          break;
+        default:
+          returnValue = alert['_source'][column.name];
+          break;
+      }
+    } catch(e) {}
+
+    return returnValue;
+  }
+
   ngOnInit() {
     this.search();
-
-    this.configureTableService.getTableColumns().subscribe((colNames: any[]) => {
-      this.alertsColumnNames = colNames;
-    });
-
-    this.configureTableService.tableChanged$.subscribe(results => {
-      console.log(results);
-    })
+    this.getAlertColumnNames();
+    this.addAlertColChangedListner();
   }
 
   onSearch(resetPaginationParams: boolean = true) {
@@ -63,11 +119,41 @@ export class AlertsListComponent implements OnInit {
     this.search(true);
   }
 
+  onResize($event) {
+    let tableWidth = this.table.nativeElement.offsetWidth;
+    clearTimeout(this.colNumberTimerId);
+    this.colNumberTimerId = setTimeout(() => { this.setColumnsToDisplay(); },500)
+  }
+
+  prepareData(configuredColumns: ColumnMetadata[], defaultColumns: ColumnMetadata[]) {
+    this.alertsColumns = (configuredColumns && configuredColumns.length > 0) ?  configuredColumns:  defaultColumns;
+    this.setColumnsToDisplay();
+  }
+
   selectAllRows($event) {
     this.selectedAlerts = [];
     if ($event.target.checked) {
       this.selectedAlerts = this.alerts;
     }
+  }
+
+  setColumnsToDisplay() {
+    let availableWidth = document.documentElement.clientWidth - (200 + (15*3));
+    availableWidth = availableWidth - (55 + 25 + 25);
+    let tWidth = 0;
+    this.alertsColumnsToDisplay =  this.alertsColumns.filter(colMetaData => {
+      if (colMetaData.type.toUpperCase() === 'DATE') {
+        tWidth += 140;
+      } else if (colMetaData.type.toUpperCase() === 'IP') {
+        tWidth += 120;
+      } else if (colMetaData.type.toUpperCase() === 'BOOLEAN') {
+        tWidth += 50;
+      } else {
+        tWidth += 130;
+      }
+
+      return tWidth < availableWidth;
+    });
   }
 
   mockSearch() {
@@ -85,30 +171,24 @@ export class AlertsListComponent implements OnInit {
     }
 
     this.alertsService.search(this.searchRequest).subscribe(results => {
-      let alertResults = [];
-      for(let hit of results['hits'].hits) {
-        alertResults.push(new Alert(85,  'description', hit['_id'], hit['_source']['timestamp'], hit['_source']['source:type'],
-          hit['_source']['ip_src_addr'], 'Los Angeles, CA USA', hit['_source']['ip_dst_addr'], 'x230-12811', hit['_source']['alert_status'], hit['_index'], hit['_type'], hit['_source']));
-      }
-      this.alerts = alertResults;
+      this.alerts = results['hits'].hits;
       this.paginationParams.total = results['hits'].total;
     });
   }
 
   selectRow($event, alert: Alert) {
     if ($event.target.checked) {
-      this.showConfigureTable = true;
       this.selectedAlerts.push(alert);
     } else {
       this.selectedAlerts.splice(this.selectedAlerts.indexOf(alert), 1);
     }
   }
 
-  showDetails($event, alert: Alert) {
+  showDetails($event, alert: any) {
     if ($event.target.type !== 'checkbox' && $event.target.parentElement.firstChild.type !== 'checkbox' && $event.target.nodeName !== 'A') {
       this.selectedAlerts = [];
       this.selectedAlerts = [alert];
-      this.router.navigateByUrl('/alerts-list(dialog:details/' + alert._index + '/' + alert._type + '/' + alert.alertId + ')');
+      this.router.navigateByUrl('/alerts-list(dialog:details/' + alert._index + '/' + alert._type + '/' + alert._id + ')');
     }
   }
 
@@ -116,7 +196,6 @@ export class AlertsListComponent implements OnInit {
     this.workflowService.start(this.selectedAlerts).subscribe(workflowId => {
       this.alertsService.updateAlertState(this.selectedAlerts, 'ESCALATE', workflowId).subscribe(results => {
         this.updateSelectedAlertStatus('ESCALATE');
-        console.log(results);
       });
     });
   }
@@ -124,21 +203,18 @@ export class AlertsListComponent implements OnInit {
   processDismiss() {
     this.alertsService.updateAlertState(this.selectedAlerts, 'DISMISS', '').subscribe(results => {
       this.updateSelectedAlertStatus('DISMISS');
-      console.log(results);
     });
   }
 
   processOpen() {
     this.alertsService.updateAlertState(this.selectedAlerts, 'OPEN', '').subscribe(results => {
       this.updateSelectedAlertStatus('OPEN');
-      console.log(results);
     });
   }
 
   processResolve() {
     this.alertsService.updateAlertState(this.selectedAlerts, 'RESOLVE', '').subscribe(results => {
       this.updateSelectedAlertStatus('RESOLVE');
-      console.log(results);
     });
   }
 
@@ -165,7 +241,7 @@ export class AlertsListComponent implements OnInit {
   }
 
   generateQuery() {
-    this.searchRequest.query['query_string'].query = this.filters.map(filter => filter.field.replace(':', '\\:') + ':' + filter.value).join(' AND ');
+    this.searchRequest.query['query_string'].query = this.filters.map(filter => filter.field.replace(/:/g, '\\:') + ':' + filter.value).join(' AND ');
     if (this.searchRequest.query['query_string'].query.length === 0) {
       this.searchRequest.query['query_string'].query = '*';
     }

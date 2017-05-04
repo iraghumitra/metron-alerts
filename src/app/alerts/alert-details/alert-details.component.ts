@@ -47,7 +47,6 @@ export class AlertDetailsComponent implements OnInit {
   }
 
   processOpen() {
-    console.log('open');
     this.selectedAlertState = AlertState.OPEN;
     this.alertsService.updateAlertState([this.alert], 'OPEN', '').subscribe(results => {
       this.getData()
@@ -55,7 +54,6 @@ export class AlertDetailsComponent implements OnInit {
   }
 
   processNew() {
-    console.log('new');
     this.selectedAlertState = AlertState.NEW;
     this.alertsService.updateAlertState([this.alert], 'NEW', '').subscribe(results => {
       this.getData()
@@ -63,7 +61,6 @@ export class AlertDetailsComponent implements OnInit {
   }
 
   processEscalate() {
-    console.log('escalate');
     this.selectedAlertState = AlertState.ESCALATE;
     this.workflowService.start([this.alert]).subscribe(workflowId => {
       this.alertsService.updateAlertState([this.alert], 'ESCALATE', workflowId).subscribe(results => {
@@ -73,7 +70,6 @@ export class AlertDetailsComponent implements OnInit {
   }
 
   processDismiss() {
-    console.log('dismiss');
     this.selectedAlertState = AlertState.DISMISS;
     this.alertsService.updateAlertState([this.alert], 'DISMISS', '').subscribe(results => {
       this.getData()
@@ -81,7 +77,6 @@ export class AlertDetailsComponent implements OnInit {
   }
 
   processResolve() {
-    console.log('resolve');
     this.selectedAlertState = AlertState.RESOLVE;
     this.alertsService.updateAlertState([this.alert], 'RESOLVE', '').subscribe(results => {
       this.getData()

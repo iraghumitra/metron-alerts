@@ -31,6 +31,5 @@ import {ConfigureTableService} from "./service/configure-table.service";
 
 export class AppModule {
   constructor(router: Router) {
-    console.log('Routes: ', JSON.stringify(router.config, undefined, 2));
   }
 }

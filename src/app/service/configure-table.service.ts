@@ -1,44 +1,38 @@
 import {Injectable, Inject} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
-import {Alert} from '../model/alert';
-import {Http, Headers, RequestOptions} from '@angular/http';
-import {HttpUtil} from "../utils/httpUtil";
+import {Http} from '@angular/http';
+import {Subject} from "rxjs/Subject";
+
 import {IAppConfig} from '../app.config.interface';
 import {APP_CONFIG} from '../app.config';
-import {Subject} from "rxjs/Subject";
+import {ALERTS_TABLE_COLS} from '../utils/constants';
+import {ColumnMetadata} from '../model/column-metadata';
 
 @Injectable()
 export class ConfigureTableService {
 
+  private tableChangedSource = new Subject<string>();
+  tableChanged$ = this.tableChangedSource.asObservable();
   defaultHeaders = {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'};
-  alertsColumnNames = [
-    { 'key': 'score',           'display': 'Score',             'type': 'number'},
-    { 'key': '_id',             'display': 'Alert ID',          'type': 'string'},
-    { 'key': 'timestamp',       'display': 'Age',               'type': 'number'},
-    { 'key': 'source:type',     'display': 'Alert Source',      'type': 'string'},
-    { 'key': 'ip_src_addr',     'display': 'Source IP',         'type': 'string'},
-    { 'key': 'sourceLocation',  'display': 'Source Location',   'type': 'string'},
-    { 'key': 'ip_dst_addr',     'display': 'Destination IP',    'type': 'string'},
-    { 'key': 'designatedHost',  'display': 'Designated Host',   'type': 'string'},
-    { 'key': 'alert_status',    'display': 'Status',            'type': 'string'}
-  ];
 
   constructor(private http: Http, @Inject(APP_CONFIG) private config: IAppConfig) {
   }
 
-  private tableChangedSource = new Subject<string>();
+  getConfiguredTableColumns(): Observable<any[]> {
+    return Observable.create(observer => {
+      let alertsColumnNames: ColumnMetadata[] = [];
+      try {
+        alertsColumnNames = JSON.parse(localStorage.getItem(ALERTS_TABLE_COLS));
+      } catch (e) {}
 
-  tableChanged$ = this.tableChangedSource.asObservable();
+      observer.next(alertsColumnNames);
+      observer.complete();
 
-  onTableChanged() {
-    this.tableChangedSource.next('table changed');
+    });
   }
 
-  getTableColumns(): Observable<any[]> {
-    return Observable.create(observer => {
-      observer.next(this.alertsColumnNames);
-      observer.complete();
-    });
+  fireTableChanged() {
+    this.tableChangedSource.next('table changed');
   }
 
 }
