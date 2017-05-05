@@ -2,3 +2,4 @@
 .idea/
 metron-alerts.iml
 node_modules/
+/dist/

@@ -5,7 +5,6 @@ import {Http, Headers, RequestOptions, Response, URLSearchParams} from '@angular
 import {HttpUtil} from "../utils/httpUtil";
 import {IAppConfig} from '../app.config.interface';
 import {APP_CONFIG} from '../app.config';
-import {QueryBuilder} from "../model/search-request";
 
 @Injectable()
 export class AlertService {
