@@ -5,7 +5,7 @@ import {Http, Headers, RequestOptions, Response, URLSearchParams} from '@angular
 import {HttpUtil} from "../utils/httpUtil";
 import {IAppConfig} from '../app.config.interface';
 import {APP_CONFIG} from '../app.config';
-import {SearchRequest} from "../model/search-request";
+import {QueryBuilder} from "../model/search-request";
 
 @Injectable()
 export class AlertService {
@@ -23,8 +23,8 @@ export class AlertService {
     });
   }
 
-  public search(request: SearchRequest): Observable<{}> {
-    let url: string = '/search/_all/_search';
+  public search(request: {}): Observable<{}> {
+    let url: string = '/search/*,-*kibana/_search';
     return this.http.post(url, request, new RequestOptions({headers: new Headers(this.defaultHeaders)}))
       .map(HttpUtil.extractData)
       .catch(HttpUtil.handleError);

@@ -5,7 +5,7 @@ import {Http, Headers, RequestOptions, Response, URLSearchParams} from '@angular
 import {HttpUtil} from "../utils/httpUtil";
 import {IAppConfig} from '../app.config.interface';
 import {APP_CONFIG} from '../app.config';
-import {SearchRequest} from "../model/search-request";
+import {QueryBuilder} from "../model/search-request";
 import {MetadataUtil} from '../utils/metadata-utils';
 import {ColumnMetadata} from '../model/column-metadata';
 
@@ -16,11 +16,11 @@ export class ClusterMetaDataService {
 
   defaultColumnMetadata = [
     new ColumnMetadata('_id', 'string'),
-    new ColumnMetadata('timestamp', 'number'),
+    new ColumnMetadata('timestamp', 'date'),
     new ColumnMetadata('source:type','string'),
-    new ColumnMetadata('ip_src_addr', 'string'),
+    new ColumnMetadata('ip_src_addr', 'ip'),
     new ColumnMetadata('enrichments:geo:ip_dst_addr:country', 'string'),
-    new ColumnMetadata('ip_dst_addr', 'string'),
+    new ColumnMetadata('ip_dst_addr', 'ip'),
     new ColumnMetadata('host', 'string'),
     new ColumnMetadata('alert_status', 'string')
   ];

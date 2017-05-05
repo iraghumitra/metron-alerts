@@ -15,10 +15,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export class SearchRequest {
-  query: any;
-  from: number;
-  size: number;
-  sort: {}[];
-  aggs: {};
+export class Pagination {
+  from: number = 0;
+  total: number;
+  size: number = 15;
 }
