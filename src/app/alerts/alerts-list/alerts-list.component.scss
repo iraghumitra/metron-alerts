@@ -2,6 +2,8 @@
 @import "../../../styles.scss";
 @import "../../../variables.scss";
 
+$searchbox-height: 40px;
+
 .mrow {
   @extend .my-4;
 }
@@ -9,23 +11,91 @@
 .search {
   .form-control {
     @extend .input;
+    min-height: $searchbox-height;
     border-right: none;
   }
 
-  &:focus {
-    @extend .input;
+  button {
+    background: $icon-button-background;
   }
 
-  .form-control + .input-group-addon {
-    cursor: pointer;
+  .btn-search {
+    width: 35px;
+    padding-left: 0px;
+    padding-right: 0px;
     border: 1px solid $blue-chill !important;
-    background: $icon-button-background;
+
+    &:focus {
+      box-shadow: none;
+    }
 
     &::before {
       font-family: "FontAwesome";
       content: '\f002';
       color: $piction-blue;
     }
+  }
+
+  .btn-saved-searches {
+    font-size: 15px;
+
+    background: $mine-shaft-5;
+    border: 1px solid $tundora;
+    color: $silver-chalice;
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    &::after {
+      font-family: "FontAwesome";
+      content: '\f0da';
+      color: $gray;
+      padding-left: 5px;
+    }
+  }
+
+  .btn-search-clear {
+    border-top: 1px solid $tundora;
+    border-bottom: 1px solid $tundora;
+    border-right: none;
+    background: $mine-shaft-1;
+    border-left: none;
+    padding: 0px 5px 0px 0px;
+    width: 30px;
+    cursor: pointer;
+
+    &:focus {
+      box-shadow: none;
+    }
+
+    &::before {
+      font-family: "FontAwesome";
+      content: '\f057';
+      color: $gray;
+      padding-left: 5px;
+    }
+  }
+}
+
+.save-button {
+  width: $searchbox-height;
+  height: $searchbox-height;
+  display: block;
+  margin-left: 10px;
+  background: $mine-shaft-5;
+  border: 1px solid $tundora;
+  color: $silver-chalice;
+  border-radius: 4px;
+
+  &::before {
+    font-family: "FontAwesome";
+    content: '\f0c7';
+    color: $dusty-grey;
+    position: absolute;
+    padding-left: 10px;
+    padding-top: 3px;
+    font-size: 22px;
   }
 }
 
