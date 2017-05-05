@@ -1,4 +1,5 @@
 import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {Pagination} from '../../../model/pagination';
 
 @Component({
   selector: 'metron-table-pagination',
@@ -7,53 +8,25 @@ import { Component, Input, Output, EventEmitter } from '@angular/core';
 })
 export class MetronTablePaginationComponent  {
 
-  @Input() total: number;
-  
-  @Output() startChange = new EventEmitter();
-  @Output() endChange = new EventEmitter();
-  @Output() next = new EventEmitter();
-  @Output() previous = new EventEmitter();
-
-  startValue: number;
-  endValue: number;
+  @Output() pageChange = new EventEmitter();
+  pagination = new Pagination();
 
   @Input()
-  get start() {
-    return this.startValue;
+  get pagingData() {
+    return this.pagination;
   }
 
-  set start(val) {
-    this.startValue = val;
-  }
-
-  @Input()
-  get end() {
-    return this.endValue;
-  }
-
-  set end(val) {
-    this.endValue = val;
+  set pagingData(val) {
+    this.pagination = val;
   }
 
   onPrevious() {
-    let size = this.endValue-this.startValue;
-    this.start -= size;
-    this.end -= size;
-
-    this.startChange.emit(this.startValue);
-    this.endChange.emit(this.endValue);
-
-    this.next.emit();
+    this.pagination.from -= this.pagination.size;
+    this.pageChange.emit();
   }
 
   onNext() {
-    let size = this.endValue-this.startValue;
-    this.start  += size;
-    this.end  += size;
-
-    this.startChange.emit(this.startValue);
-    this.endChange.emit(this.endValue);
-
-    this.previous.emit();
+    this.pagination.from  += this.pagination.size;
+    this.pageChange.emit();
   }
 }
