@@ -1,9 +1,23 @@
-<div class="container-fluid">
+<div class="container-fluid px-0">
     <div class="mrow">
-        <div class="col-md-12">
-            <div class="input-group search">
-                <input type="text" class="form-control" placeholder="Search Alerts" aria-describedby="basic-addon2" [(ngModel)]="queryBuilder.query" (keyup.enter)="onSearch()">
-                <span class="input-group-addon" id="basic-addon2" (click)="onSearch()"></span>
+        <div class="col-md-12 px-0">
+            <div style="width: 96%; float: left;">
+                <div class="input-group search">
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary btn-saved-searches" type="button">Searches</button>
+                    </span>
+                    <div #search contenteditable="true" class="form-control" placeholder="Search Alerts" [innerHTML]="queryBuilder.query" (keydown.enter)="onSearch(search)"> </div>
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary btn-search-clear" type="button" (click)="onClear(search)"></button>
+                    </span>
+                    <span class="input-group-btn">
+                        <button class="btn btn-secondary btn-search" type="button" (click)="onSearch(search)"></button>
+                    </span>
+                </div>
+            </div>
+            <div style="width:4%;float: right;">
+                <span class="save-button">
+                </span>
             </div>
         </div>
     </div>

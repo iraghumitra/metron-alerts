@@ -118,8 +118,18 @@ export class AlertsListComponent implements OnInit {
     this.addAlertColChangedListner();
   }
 
-  onSearch(resetPaginationParams: boolean = true) {
+  onClear(searchDiv) {
+    searchDiv.innerText = '*';
+    this.queryBuilder.query = searchDiv.innerText;
     this.search();
+  }
+
+  onSearch(searchDiv) {
+    searchDiv.innerText = searchDiv.innerText.length == 0 ? '*' : searchDiv.innerText.trim();
+    this.queryBuilder.query = searchDiv.innerText;
+    this.search();
+
+    return false;
   }
 
   onAddFilter(field: string, value: string) {
