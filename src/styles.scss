@@ -2,6 +2,7 @@
 @import "vendor.scss";
 @import "_variables.scss";
 @import "slider.scss";
+@import "metron-dialog.scss";
 
 body,
 button {
@@ -31,6 +32,45 @@ button {
     tr:last-child td {
       border-bottom: 1px solid $table-border-color;
     }
+}
+
+form
+{
+  label
+  {
+    font-family: Roboto-Medium;
+    font-size: 12px;
+    color: $dusty-grey;
+    margin: 0px 0px 2px 5px;
+  }
+
+  input.form-control
+  {
+    background: $mine-shaft-1;
+  }
+}
+
+.form-control, select
+{
+  border: solid 1px $tundora;
+  background-color: $mine-shaft;
+  font-family: Roboto;
+  font-size: 13px;
+  color: $silver;
+  height: 35px;
+
+  &[readonly]
+  {
+    background: $tundora-1;
+    border: 1px solid $tundora;
+  }
+
+  &:focus
+  {
+    background-color: $mine-shaft;
+    border-color: $tundora;
+    color: $silver;
+  }
 }
 
 @include placeholder {

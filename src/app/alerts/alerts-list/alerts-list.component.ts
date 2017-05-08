@@ -13,6 +13,7 @@ import {ColumnMetadata} from '../../model/column-metadata';
 import {SortEvent} from '../../shared/metron-table/metron-table.directive';
 import {Sort} from '../../utils/enums';
 import {Pagination} from '../../model/pagination';
+import {SaveSearchService} from '../../service/save-search.service';
 
 @Component({
   selector: 'app-alerts-list',
@@ -34,8 +35,12 @@ export class AlertsListComponent implements OnInit {
   pagingData = new Pagination();
   queryBuilder: QueryBuilder = new QueryBuilder();
 
-  constructor(private router: Router, private alertsService: AlertService, private configureTableService: ConfigureTableService,
-              private workflowService: WorkflowService, private clusterMetaDataService: ClusterMetaDataService) {
+  constructor(private router: Router,
+              private alertsService: AlertService,
+              private configureTableService: ConfigureTableService,
+              private workflowService: WorkflowService,
+              private clusterMetaDataService: ClusterMetaDataService,
+              private saveSearchService: SaveSearchService) {
     router.events.subscribe(event => {
       if (event instanceof NavigationStart && event.url === '/alerts-list') {
         this.selectedAlerts = [];
@@ -51,8 +56,11 @@ export class AlertsListComponent implements OnInit {
     });
   }
 
-  configureTable() {
-    this.router.navigateByUrl('/alerts-list(dialog:configure-table)');
+  addLoadSavedSearchListner() {
+    this.saveSearchService.loadSavedSearch$.subscribe(queryBuilder => {
+      this.queryBuilder = queryBuilder;
+      this.search();
+    });
   }
 
   formatValue(column:ColumnMetadata, returnValue:string) {
@@ -116,6 +124,7 @@ export class AlertsListComponent implements OnInit {
     this.search();
     this.getAlertColumnNames();
     this.addAlertColChangedListner();
+    this.addLoadSavedSearchListner();
   }
 
   onClear(searchDiv) {
@@ -238,12 +247,25 @@ export class AlertsListComponent implements OnInit {
     }
   }
 
+  showConfigureTable() {
+    this.router.navigateByUrl('/alerts-list(dialog:configure-table)');
+  }
+
   showDetails($event, alert: any) {
     if ($event.target.type !== 'checkbox' && $event.target.parentElement.firstChild.type !== 'checkbox' && $event.target.nodeName !== 'A') {
       this.selectedAlerts = [];
       this.selectedAlerts = [alert];
       this.router.navigateByUrl('/alerts-list(dialog:details/' + alert._index + '/' + alert._type + '/' + alert._id + ')');
     }
+  }
+
+  showSavedSearches() {
+    this.router.navigateByUrl('/alerts-list(dialog:saved-searches)');
+  }
+
+  showSaveSearch() {
+    this.saveSearchService.setQueryBuilderToSave(this.queryBuilder);
+    this.router.navigateByUrl('/alerts-list(dialog:save-search)');
   }
 
   updateSelectedAlertStatus(status: string) {

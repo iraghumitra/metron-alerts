@@ -15,8 +15,15 @@ $searchbox-height: 40px;
     border-right: none;
   }
 
+  .input-group-btn {
+    &:focus {
+      outline: none;
+    }
+  }
+
   button {
     background: $icon-button-background;
+    cursor: pointer;
   }
 
   .btn-search {
@@ -58,7 +65,7 @@ $searchbox-height: 40px;
   .btn-search-clear {
     border-top: 1px solid $tundora;
     border-bottom: 1px solid $tundora;
-    border-right: none;
+    border-right: 1px solid $blue-chill;
     background: $mine-shaft-1;
     border-left: none;
     padding: 0px 5px 0px 0px;
@@ -87,6 +94,7 @@ $searchbox-height: 40px;
   border: 1px solid $tundora;
   color: $silver-chalice;
   border-radius: 4px;
+  cursor: pointer;
 
   &::before {
     font-family: "FontAwesome";

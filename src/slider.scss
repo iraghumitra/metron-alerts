@@ -12,10 +12,10 @@ $dialog-4x-width: 1380px;
   display: inline-block;
   float: right;
   word-wrap: break-word;
-  height: 100%;
+  height: auto;
   min-height: 100%;
   position: absolute;
-  right: 0px;
+
   top: 0;
   z-index: 9;
   background: $edit-child-background;
@@ -56,13 +56,13 @@ $dialog-4x-width: 1380px;
   }
 }
 
-@mixin keyframes($animation-name, $start) {
+@mixin keyframes($animation-name, $start, $end) {
   @-webkit-keyframes #{$animation-name} {
     0% {
       --webkit-transform: translateX(#{$start});
     }
     100% {
-      -webkit-transform: translateX(0);
+      -webkit-transform: translateX(#{$end});
     }
   }
   @-moz-keyframes #{$animation-name} {
@@ -70,7 +70,7 @@ $dialog-4x-width: 1380px;
       -moz-transform: translateX(#{$start});
     }
     100% {
-      -moz-transform: translateX(0);
+      -moz-transform: translateX(#{$end});
     }
   }
   @-ms-keyframes #{$animation-name} {
@@ -78,7 +78,7 @@ $dialog-4x-width: 1380px;
       -ms-transform: translateX(#{$start});
     }
     100% {
-      -ms-transform: translateX(0);
+      -ms-transform: translateX(#{$end});
     }
   }
   @-o-keyframes #{$animation-name} {
@@ -86,7 +86,7 @@ $dialog-4x-width: 1380px;
       -o-transform: translateX(#{$start});
     }
     100% {
-      -o-transform: translateX(0);
+      -o-transform: translateX(#{$end});
     }
   }
   @keyframes #{$animation-name} {
@@ -94,12 +94,10 @@ $dialog-4x-width: 1380px;
       transform: translateX(#{$start});
     }
     100% {
-      transform: translateX(0);
+      transform: translateX(#{$end});
     }
   }
 }
-
-@include keyframes("keyframe-dialog-rtl", "320px")
 
 @mixin animation($name, $duration, $function)
 {
@@ -108,6 +106,17 @@ $dialog-4x-width: 1380px;
   animation: #{$name} #{$duration} #{$function};
 }
 
+@include keyframes("keyframe-dialog-rtl", "320px", "0px")
+
 .load-right-to-left{
-  @include animation("keyframe-dialog-rtl", "0.5s", "linear")
+  @include animation("keyframe-dialog-rtl", "0.5s", "linear");
+
+  right: 0px;
+  float: right;
+}
+
+@include keyframes("keyframe-dialog-ltr", "-320px", "0px")
+
+.load-left-to-right{
+  @include animation("keyframe-dialog-ltr", "0.5s", "linear")
 }
