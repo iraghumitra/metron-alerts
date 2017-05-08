@@ -25,6 +25,7 @@ export class QueryBuilder {
   private _filters: Filter[] = [];
 
   set query(value:string) {
+    value = value.replace(/\\:/g, ':');
     this._query = value;
     this.updateFilters();
     this.onSearchChange();
