@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import 'bootstrap';
 
 export interface CollapseComponentData {
@@ -13,9 +13,17 @@ export interface CollapseComponentData {
 })
 export class CollapseComponent implements OnInit {
 
-  @Input() data: any;
   static counter = 0;
   uniqueId: string = '';
+
+  @Input() data: any;
+  @Input() fontSize = 14;
+  @Input() titleSeperator = false;
+  @Input() deleteOption = false;
+  @Input() show = false;
+
+  @Output() onSelect = new EventEmitter<{name:string, key: string}>();
+  @Output() onDelete = new EventEmitter<{name:string, key: string}>();
 
   constructor() {
     this.uniqueId = 'CollapseComponent' + '_' + ++CollapseComponent.counter;
@@ -24,4 +32,13 @@ export class CollapseComponent implements OnInit {
   ngOnInit() {
   }
 
+  onDeleteClick($event, key: string) {
+    this.onDelete.emit({name: this.data.getName(), key: key});
+    $event.stopPropagation();
+    return false;
+  }
+
+  onSelectClick(key: string) {
+    this.onSelect.emit({name: this.data.getName(), key: key});
+  }
 }

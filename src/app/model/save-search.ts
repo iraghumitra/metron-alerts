@@ -1,3 +1,4 @@
+import {QueryBuilder} from './query-builder';
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -15,5 +16,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const ALERTS_TABLE_COLS = 'metron-alerts-table-col';
-export const ALERTS_SAVED_QUERIES = 'metron-alerts-queries';
+export class SaveSearch {
+  name: string = '';
+  lastAccessed: number = 0;
+  queryBuilder: QueryBuilder;
+}

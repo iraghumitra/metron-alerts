@@ -4,7 +4,7 @@
             <div style="width: 96%; float: left;">
                 <div class="input-group search">
                     <span class="input-group-btn">
-                        <button class="btn btn-secondary btn-saved-searches" type="button">Searches</button>
+                        <button class="btn btn-secondary btn-saved-searches" type="button" (click)="showSavedSearches()">Searches</button>
                     </span>
                     <div #search contenteditable="true" class="form-control" placeholder="Search Alerts" [innerHTML]="queryBuilder.query" (keydown.enter)="onSearch(search)"> </div>
                     <span class="input-group-btn">
@@ -16,17 +16,17 @@
                 </div>
             </div>
             <div style="width:4%;float: right;">
-                <span class="save-button">
+                <span class="save-button" (click)="showSaveSearch()">
                 </span>
             </div>
         </div>
     </div>
     <div class="mrow">
-        <div class="col-md-10">
+        <div class="col-md-10 px-0">
             <span class="col-form-label-lg"> Alerts ({{alerts.length}} of {{pagingData.total}}) </span>
             <button *ngFor="let filter of queryBuilder.filters" class="filter-button btn btn-primary" (click)="removeFilter(filter.field)" type="button">x {{ filter.field }}</button>
         </div>
-        <div class="col-md-2">
+        <div class="col-md-2 px-0">
             <div class="dropdown pull-right">
                 <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     ACTIONS
@@ -57,7 +57,7 @@
                     <tr>
                         <th style="width:55px"> <metron-config-sorter [type]="'number'" [sortBy]="'_score'"> score </metron-config-sorter> </th>
                         <th *ngFor="let column of alertsColumnsToDisplay" [id]="column.name"> <metron-config-sorter [type]="column.type" [sortBy]="column.name" title="{{column.name}}"> {{ column.name | centerEllipses:15 }}</metron-config-sorter> </th>
-                        <th style="width:25px"><i class="fa fa-cog configure-table-icon" (click)="configureTable()"></i></th>
+                        <th style="width:25px"><i class="fa fa-cog configure-table-icon" (click)="showConfigureTable()"></i></th>
                         <th style="width:25px"><input id="select-deselect-all" class="fontawesome-checkbox" type="checkbox" (click)="selectAllRows($event)"><label for="select-deselect-all"></label></th>
                     </tr>
                     </thead>

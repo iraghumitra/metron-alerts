@@ -49,6 +49,18 @@ export class QueryBuilder {
     this.onSearchChange();
   }
 
+  public static fromJSON(obj: QueryBuilder): QueryBuilder {
+    let queryBuilder = new QueryBuilder();
+    queryBuilder._query = obj._query;
+    queryBuilder.from = obj.from;
+    queryBuilder.size = obj.size;
+    queryBuilder.sort = obj.sort;
+    queryBuilder.aggs = obj.aggs;
+    queryBuilder._filters = obj._filters;
+
+    return queryBuilder;
+  }
+
   generateSelect() {
     let select = this._filters.map(filter => filter.field.replace(/:/g, '\\:') + ':' + filter.value).join(' AND ');
     return (select.length === 0) ? '*' : select;
