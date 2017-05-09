@@ -9,6 +9,10 @@ $searchbox-height: 40px;
 }
 
 .search {
+  div {
+    height: auto;
+  }
+
   .form-control {
     @extend .input;
     min-height: $searchbox-height;
