@@ -18,5 +18,5 @@
 export class Pagination {
   from: number = 0;
   total: number;
-  size: number = 15;
+  size: number = 25;
 }

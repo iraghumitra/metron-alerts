@@ -1,3 +1,4 @@
+
 import { Component, Input, Output, EventEmitter } from '@angular/core';
 import {Pagination} from '../../../model/pagination';
 

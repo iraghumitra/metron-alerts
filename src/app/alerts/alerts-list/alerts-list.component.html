@@ -17,8 +17,8 @@
             </div>
         </div>
         <div class="col-fixed-50">
-                <span class="save-button" (click)="showSaveSearch()">
-                </span>
+            <span class="save-button" (click)="showSaveSearch()">
+            </span>
         </div>
     </div>
     <div class="mrow">
@@ -31,9 +31,10 @@
                 <div class="btn settings">
                     <i #settingsIcon class="fa fa-sliders" aria-hidden="true"></i>
                 </div>
-                <app-configure-rows [srcElement]="settingsIcon"> </app-configure-rows>
-                <div class="btn pause-play">
-                    <i class="fa fa-pause" aria-hidden="true"></i>
+                <app-configure-rows [srcElement]="settingsIcon" [(interval)]="refreshInterval" [(size)]="pagingData.size" (configRowsChange)="onConfigRowsChange()"> </app-configure-rows>
+                <div class="btn pause-play" (click)="onPausePlay()">
+                    <i *ngIf="!pauseRefresh" class="fa fa-pause" aria-hidden="true"></i>
+                    <i *ngIf="pauseRefresh" class="fa fa-play" aria-hidden="true"></i>
                 </div>
                 <div class="dropdown d-inline-block">
                     <button class="btn btn-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -60,7 +61,7 @@
             </div>
         </div>
         <div class="col-sm-12 col-offset-200">
-            <div style="min-height: 460px">
+            <div class="table-wrapper">
                 <table class="table table-sm" metron-config-table [data]="alerts" [cellSelectable]="true" (onSort)="onSort($event)" style="white-space: nowrap;" (window:resize)="onResize($event)" #table>
                     <thead>
                     <tr>

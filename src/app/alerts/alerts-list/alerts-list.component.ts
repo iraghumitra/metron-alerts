@@ -14,6 +14,7 @@ import {SortEvent} from '../../shared/metron-table/metron-table.directive';
 import {Sort} from '../../utils/enums';
 import {Pagination} from '../../model/pagination';
 import {SaveSearchService} from '../../service/save-search.service';
+import {RefreshInterval} from '../configure-rows/configure-rows-enums';
 
 @Component({
   selector: 'app-alerts-list',
@@ -29,6 +30,10 @@ export class AlertsListComponent implements OnInit {
   selectedAlerts: Alert[] = [];
   alerts: any[] = [];
   colNumberTimerId: number;
+  refreshInterval = RefreshInterval.ONE_MIN;
+  refreshTimer: any;
+  pauseRefresh = false;
+  lastPauseRefreshValue = false;
 
   @ViewChild('table') table: ElementRef;
 
@@ -44,6 +49,7 @@ export class AlertsListComponent implements OnInit {
     router.events.subscribe(event => {
       if (event instanceof NavigationStart && event.url === '/alerts-list') {
         this.selectedAlerts = [];
+        this.restoreRefreshState();
       }
     });
   }
@@ -119,7 +125,7 @@ export class AlertsListComponent implements OnInit {
 
     return returnValue;
   }
-  
+
   ngOnInit() {
     this.search();
     this.getAlertColumnNames();
@@ -146,9 +152,24 @@ export class AlertsListComponent implements OnInit {
     this.search();
   }
 
+  onConfigRowsChange() {
+    this.alertsService.interval = this.refreshInterval;
+    this.tryStopPolling();
+    this.search();
+  }
+
   onPageChange() {
     this.queryBuilder.setFromAndSize(this.pagingData.from, this.pagingData.size);
     this.search(false);
+  }
+
+  onPausePlay() {
+    this.pauseRefresh = !this.pauseRefresh;
+    if (this.pauseRefresh) {
+      this.tryStopPolling();
+    } else {
+      this.search(false);
+    }
   }
 
   onResize($event) {
@@ -229,14 +250,15 @@ export class AlertsListComponent implements OnInit {
     this.selectedAlerts = [];
 
     if (resetPaginationParams) {
-      this.pagingData = new Pagination();
+      this.pagingData.from = 0;
       this.queryBuilder.setFromAndSize(this.pagingData.from, this.pagingData.size);
     }
 
-    this.alertsService.search(this.queryBuilder.getESSearchQuery()).subscribe(results => {
-      this.alerts = results['hits'].hits;
-      this.pagingData.total = results['hits'].total;
+    this.alertsService.search(this.queryBuilder).subscribe(results => {
+      this.setData(results);
     });
+
+    this.tryStartPolling();
   }
 
   selectRow($event, alert: Alert) {
@@ -247,7 +269,13 @@ export class AlertsListComponent implements OnInit {
     }
   }
 
+  setData(results) {
+    this.alerts = results['hits'].hits;
+    this.pagingData.total = results['hits'].total;
+  }
+
   showConfigureTable() {
+    this.saveRefreshState();
     this.router.navigateByUrl('/alerts-list(dialog:configure-table)');
   }
 
@@ -255,17 +283,44 @@ export class AlertsListComponent implements OnInit {
     if ($event.target.type !== 'checkbox' && $event.target.parentElement.firstChild.type !== 'checkbox' && $event.target.nodeName !== 'A') {
       this.selectedAlerts = [];
       this.selectedAlerts = [alert];
+      this.saveRefreshState();
       this.router.navigateByUrl('/alerts-list(dialog:details/' + alert._index + '/' + alert._type + '/' + alert._id + ')');
     }
   }
 
+  saveRefreshState() {
+    this.lastPauseRefreshValue = this.pauseRefresh;
+    this.tryStopPolling();
+  }
+
+  restoreRefreshState() {
+    this.pauseRefresh = this.lastPauseRefreshValue;
+    this.tryStartPolling();
+  }
+
   showSavedSearches() {
+    this.saveRefreshState();
     this.router.navigateByUrl('/alerts-list(dialog:saved-searches)');
   }
 
   showSaveSearch() {
+    this.saveRefreshState();
     this.saveSearchService.setQueryBuilderToSave(this.queryBuilder);
     this.router.navigateByUrl('/alerts-list(dialog:save-search)');
+  }
+
+  tryStartPolling() {
+    if (!this.pauseRefresh) {
+      this.refreshTimer = this.alertsService.pollSearch(this.queryBuilder).subscribe(results => {
+        this.setData(results);
+      });
+    }
+  }
+
+  tryStopPolling() {
+    if (this.refreshTimer) {
+      this.refreshTimer.unsubscribe();
+    }
   }
 
   updateSelectedAlertStatus(status: string) {
