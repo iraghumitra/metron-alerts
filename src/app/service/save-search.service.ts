@@ -79,7 +79,9 @@ export class SaveSearchService {
       let savedSearches: SaveSearch[] = [];
       try {
         savedSearches = JSON.parse(localStorage.getItem(ALERTS_SAVED_QUERIES));
-        savedSearches.find(search => search.name === saveSearch.name).lastAccessed = saveSearch.lastAccessed;
+        let savedItem = savedSearches.find(search => search.name === saveSearch.name);
+        savedItem.lastAccessed = saveSearch.lastAccessed;
+        savedItem.queryBuilder = saveSearch.queryBuilder;
       } catch (e) {}
 
       localStorage.setItem(ALERTS_SAVED_QUERIES, JSON.stringify(savedSearches));

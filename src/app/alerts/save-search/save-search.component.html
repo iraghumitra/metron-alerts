@@ -13,7 +13,7 @@
       </div>
 
       <div class="my-4">
-        <button type="submit" class="btn btn-all_ports" (click)="save()" [disabled]="saveSearch.name.length===0" title="Please specify a name to save the query">SAVE</button>
+        <button type="submit" class="btn btn-all_ports" (click)="trySave()" [disabled]="saveSearch.name.length===0" title="Please specify a name to save the query">SAVE</button>
         <button class="btn btn-mine_shaft_2" (click)="goBack()">CANCEL</button>
       </div>
     </form>

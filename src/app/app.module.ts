@@ -11,12 +11,12 @@ import {AlertDetailsModule} from './alerts/alert-details/alerts-details.module';
 import {APP_CONFIG, METRON_REST_CONFIG} from "./app.config";
 import {ConfigureTableModule} from "./alerts/configure-table/configure-table.module";
 import {ConfigureTableService} from "./service/configure-table.service";
-import { SaveSearchComponent } from './alerts/save-search/save-search.component';
 import {SaveSearchModule} from './alerts/save-search/save-search.module';
 import {SaveSearchService} from './service/save-search.service';
-import { SavedSearchesComponent } from './alerts/saved-searches/saved-searches.component';
 import {SavedSearchesModule} from './alerts/saved-searches/saved-searches.module';
 import {MetronDialogBox} from './shared/metron-dialog-box';
+import {ConfigureRowsModule} from './alerts/configure-rows/configure-rows.module';
+import {SwitchModule} from './shared/switch/switch.module';
 
 @NgModule({
   declarations: [
@@ -30,8 +30,10 @@ import {MetronDialogBox} from './shared/metron-dialog-box';
     AlertsListModule,
     AlertDetailsModule,
     ConfigureTableModule,
+    ConfigureRowsModule,
     SaveSearchModule,
-    SavedSearchesModule
+    SavedSearchesModule,
+    SwitchModule
   ],
   providers: [{ provide: APP_CONFIG, useValue: METRON_REST_CONFIG },
               ConfigureTableService,
