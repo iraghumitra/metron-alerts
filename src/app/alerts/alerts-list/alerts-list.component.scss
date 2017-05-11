@@ -185,10 +185,11 @@ $searchbox-height: 40px;
 
   i {
     font-size: 17px;
+    color: $piction-blue;
   }
 
-  .fa-pause {
-    color: $piction-blue;
+  .fa-play {
+    padding-left: 3px;
   }
 }
 
@@ -210,5 +211,10 @@ $searchbox-height: 40px;
 
   .btn {
     font-size: 0.8em;
+    min-height: 38px;
   }
+}
+
+.table-wrapper {
+  min-height: calc(100vh - 250px);
 }

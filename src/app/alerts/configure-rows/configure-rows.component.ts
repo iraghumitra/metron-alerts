@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, HostListener, ElementRef } from '@angular/core';
+import { Component, OnInit, Input, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
 import {PageSize, RefreshInterval} from './configure-rows-enums';
 
 @Component({
@@ -8,11 +8,16 @@ import {PageSize, RefreshInterval} from './configure-rows-enums';
 })
 export class ConfigureRowsComponent implements OnInit {
 
+  showView = false;
   pageSize = PageSize;
-  show = false;
   sizeInternal: number = PageSize.TWENTY_FIVE;
   intervalInternal = RefreshInterval.ONE_MIN;
+
   @Input() srcElement: HTMLElement;
+  @Output() sizeChange = new EventEmitter();
+  @Output() intervalChange = new EventEmitter();
+  @Output() configRowsChange = new EventEmitter();
+
   constructor(private elementRef: ElementRef) {}
 
   @Input()
@@ -43,23 +48,31 @@ export class ConfigureRowsComponent implements OnInit {
     }
 
     if (targetElement.contains(this.srcElement)) {
-      this.show = !this.show;
+      this.showView = !this.showView;
       return;
     }
 
     const clickedInside = this.elementRef.nativeElement.contains(targetElement);
     if (!clickedInside) {
-      this.show = false;
+      this.showView = false;
     }
   }
 
   onPageSizeChange($event, parentElement) {
     parentElement.querySelector('.is-active').classList.remove('is-active');
     $event.target.classList.add('is-active');
+
+    this.size = parseInt($event.target.textContent.trim());
+    this.sizeChange.emit(this.sizeInternal);
+    this.configRowsChange.emit();
   }
 
   onRefreshIntervalChange($event, parentElement) {
     parentElement.querySelector('.is-active').classList.remove('is-active');
     $event.target.classList.add('is-active');
+
+    this.interval = parseInt($event.target.getAttribute('value').trim());
+    this.intervalChange.emit(this.intervalInternal);
+    this.configRowsChange.emit();
   }
 }
