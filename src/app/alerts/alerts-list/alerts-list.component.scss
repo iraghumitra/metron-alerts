@@ -89,6 +89,17 @@ $searchbox-height: 40px;
   }
 }
 
+.col-padding-50 {
+  padding-right: 50px;
+}
+
+.col-fixed-50 {
+  top: 0px;
+  right: 0;
+  z-index: 1;
+  position: absolute;
+}
+
 .save-button {
   width: $searchbox-height;
   height: $searchbox-height;
@@ -159,4 +170,45 @@ $searchbox-height: 40px;
 .configure-table-icon {
   font-size: 16px;
   cursor: pointer;
+}
+
+.pause-play {
+  height: 38px;
+  padding: 0px;
+  border: 1px solid #0F6F9E;
+  width: 38px;
+  line-height: 39px;
+  border-radius: 12px;
+  margin-left: 15px;
+  background: $mine-shaft-2;
+  cursor: pointer;
+
+  i {
+    font-size: 17px;
+  }
+
+  .fa-pause {
+    color: $piction-blue;
+  }
+}
+
+.settings {
+  height: 38px;
+  padding: 0px;
+  line-height: 40px;
+  margin-left: 15px;
+  color: $dove-grey-1;
+  cursor: pointer;
+
+  i {
+    font-size: 20px;
+  }
+}
+
+.dropdown {
+  margin-left: 15px;
+
+  .btn {
+    font-size: 0.8em;
+  }
 }

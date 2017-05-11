@@ -8,9 +8,11 @@ import {MetronSorterModule} from '../../shared/metron-table/metron-sorter/metron
 import {ListGroupModule} from '../../shared/list-group/list-grup.module';
 import {CollapseModule} from '../../shared/collapse/collapse.module';
 import {MetronTablePaginationModule} from '../../shared/metron-table/metron-table-pagination/metron-table-pagination.module';
+import {ConfigureRowsModule} from '../configure-rows/configure-rows.module';
 
 @NgModule({
-    imports: [routing, SharedModule, MetronSorterModule, MetronTablePaginationModule, ListGroupModule, CollapseModule],
+    imports: [routing, SharedModule, ConfigureRowsModule, MetronSorterModule, MetronTablePaginationModule,
+                ListGroupModule, CollapseModule],
     exports: [],
     declarations: [AlertsListComponent],
     providers: [AlertService],
