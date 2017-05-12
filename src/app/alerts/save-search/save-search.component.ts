@@ -38,7 +38,7 @@ export class SaveSearchComponent implements OnInit {
 
   trySave() {
     this.saveSearchService.listSavedSearches().subscribe((savedSearches: SaveSearch[]) => {
-      if (savedSearches.find(savedSearch => savedSearch.name === this.saveSearch.name)) {
+      if (savedSearches && savedSearches.length > 0 && savedSearches.find(savedSearch => savedSearch.name === this.saveSearch.name)) {
         this.update();
       } else {
         this.save();
