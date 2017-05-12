@@ -1,9 +1,8 @@
-import { Component, OnInit, ChangeDetectorRef, DoCheck } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import {Router, ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs/Rx';
 
-import {ConfigureTableService} from "../../service/configure-table.service";
-import {SampleData} from '../../model/sample-data';
+import {ConfigureTableService} from '../../service/configure-table.service';
 import {ALERTS_TABLE_COLS} from '../../utils/constants';
 import {ClusterMetaDataService} from '../../service/cluster-metadata.service';
 import {ColumnMetadata} from '../../model/column-metadata';
@@ -16,7 +15,7 @@ export class ColumnMetadataWrapper {
   columnMetadata: ColumnMetadata;
   selected: boolean;
 
-  constructor(columnMetadata: ColumnMetadata, selected: boolean){
+  constructor(columnMetadata: ColumnMetadata, selected: boolean) {
     this.columnMetadata = columnMetadata;
     this.selected = selected;
   }
@@ -50,7 +49,7 @@ export class ConfigureTableComponent implements OnInit {
 
   indexToInsert(columnMetadata: ColumnMetadata, allColumns: ColumnMetadata[], configuredColumnNames: string[]): number {
     let i = 0;
-    for ( ;i < allColumns.length; i++) {
+    for ( ; i < allColumns.length; i++) {
       if (configuredColumnNames.indexOf(allColumns[i].name) === -1 && columnMetadata.name.localeCompare(allColumns[i].name) === -1 ) {
         break;
       }
@@ -79,23 +78,25 @@ export class ConfigureTableComponent implements OnInit {
     let configuredColumnNames: string[] = configuredColumns.map((mData: ColumnMetadata) => mData.name);
 
     allColumns = allColumns.filter((mData: ColumnMetadata) => configuredColumnNames.indexOf(mData.name) === -1);
-    allColumns = allColumns.sort((mData1: ColumnMetadata, mData2: ColumnMetadata) => {return mData1.name.localeCompare(mData2.name)});
+    allColumns = allColumns.sort((mData1: ColumnMetadata, mData2: ColumnMetadata) => { return mData1.name.localeCompare(mData2.name); });
 
     let sortedConfiguredColumns = JSON.parse(JSON.stringify(configuredColumns));
-    sortedConfiguredColumns = sortedConfiguredColumns.sort((mData1: ColumnMetadata, mData2: ColumnMetadata) => {return mData1.name.localeCompare(mData2.name)});
+    sortedConfiguredColumns = sortedConfiguredColumns.sort((mData1: ColumnMetadata, mData2: ColumnMetadata) => {
+                                                                return mData1.name.localeCompare(mData2.name);
+                                                          });
 
     while (configuredColumns.length > 0 ) {
       let columnMetadata = sortedConfiguredColumns.shift();
 
       let index = this.indexOf(columnMetadata, configuredColumns);
-      let itemsToInsert: any[] = configuredColumns.splice(0, index+1);
+      let itemsToInsert: any[] = configuredColumns.splice(0, index + 1);
 
 
       let indexInAll = this.indexToInsert(columnMetadata, allColumns, configuredColumnNames);
-      allColumns.splice.apply(allColumns, [indexInAll,0].concat(itemsToInsert));
+      allColumns.splice.apply(allColumns, [indexInAll, 0].concat(itemsToInsert));
     }
 
-    this.allColumns = allColumns.map(mData => { return new ColumnMetadataWrapper(mData, configuredColumnNames.indexOf(mData.name) > -1) });
+    this.allColumns = allColumns.map(mData => { return new ColumnMetadataWrapper(mData, configuredColumnNames.indexOf(mData.name) > -1); });
   }
 
   save() {
@@ -113,13 +114,13 @@ export class ConfigureTableComponent implements OnInit {
 
   swapUp(index: number) {
     if (index > 0) {
-      [this.allColumns[index], this.allColumns[index-1]] = [this.allColumns[index-1], this.allColumns[index]];
+      [this.allColumns[index], this.allColumns[index - 1]] = [this.allColumns[index - 1], this.allColumns[index]];
     }
   }
 
   swapDown(index: number) {
     if (index + 1 < this.allColumns.length) {
-      [this.allColumns[index], this.allColumns[index+1]] = [this.allColumns[index+1], this.allColumns[index]];
+      [this.allColumns[index], this.allColumns[index + 1]] = [this.allColumns[index + 1], this.allColumns[index]];
     }
   }
 }

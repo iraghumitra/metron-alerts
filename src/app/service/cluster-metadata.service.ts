@@ -1,7 +1,7 @@
 import {Injectable, Inject} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
-import {Http, Headers, RequestOptions, Response, URLSearchParams} from '@angular/http';
-import {HttpUtil} from "../utils/httpUtil";
+import {Http, Headers, RequestOptions} from '@angular/http';
+import {HttpUtil} from '../utils/httpUtil';
 import {IAppConfig} from '../app.config.interface';
 import {APP_CONFIG} from '../app.config';
 import {MetadataUtil} from '../utils/metadata-utils';
@@ -15,7 +15,7 @@ export class ClusterMetaDataService {
   defaultColumnMetadata = [
     new ColumnMetadata('_id', 'string'),
     new ColumnMetadata('timestamp', 'date'),
-    new ColumnMetadata('source:type','string'),
+    new ColumnMetadata('source:type', 'string'),
     new ColumnMetadata('ip_src_addr', 'ip'),
     new ColumnMetadata('enrichments:geo:ip_dst_addr:country', 'string'),
     new ColumnMetadata('ip_dst_addr', 'ip'),

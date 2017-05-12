@@ -4,9 +4,9 @@ import {Observable} from 'rxjs/Rx';
 
 import {Alert} from '../../model/alert';
 import {AlertService} from '../../service/alert.service';
-import {QueryBuilder} from "../../model/query-builder";
-import {ConfigureTableService} from "../../service/configure-table.service";
-import {WorkflowService} from "../../service/workflow.service";
+import {QueryBuilder} from '../../model/query-builder';
+import {ConfigureTableService} from '../../service/configure-table.service';
+import {WorkflowService} from '../../service/workflow.service';
 import {SampleData} from '../../model/sample-data';
 import {ClusterMetaDataService} from '../../service/cluster-metadata.service';
 import {ColumnMetadata} from '../../model/column-metadata';
@@ -69,12 +69,12 @@ export class AlertsListComponent implements OnInit {
     });
   }
 
-  formatValue(column:ColumnMetadata, returnValue:string) {
+  formatValue(column: ColumnMetadata, returnValue: string) {
     try {
       if (column.name.endsWith(':ts') || column.name.endsWith('timestamp')) {
-        returnValue = new Date(parseInt(returnValue)).toISOString().replace('T', ' ').slice(0, 19);
+        returnValue = new Date(parseInt(returnValue, 10)).toISOString().replace('T', ' ').slice(0, 19);
       }
-    } catch(e) {}
+    } catch (e) {}
 
     return returnValue;
   }
@@ -96,7 +96,7 @@ export class AlertsListComponent implements OnInit {
       getData: () => {
         return data.aggregations[Object.keys(data.aggregations)[0]].buckets;
       },
-    }
+    };
   }
 
   getDataType(name: string): string {
@@ -106,7 +106,7 @@ export class AlertsListComponent implements OnInit {
   getValue(alert: any, column: ColumnMetadata, formatData: boolean) {
     let returnValue = '';
     try {
-      switch(column.name) {
+      switch (column.name) {
         case '_id':
           returnValue = alert[column.name];
           break;
@@ -117,7 +117,7 @@ export class AlertsListComponent implements OnInit {
           returnValue = alert['_source'][column.name];
           break;
       }
-    } catch(e) {}
+    } catch (e) {}
 
     if (formatData) {
       returnValue = this.formatValue(column, returnValue);
@@ -140,7 +140,7 @@ export class AlertsListComponent implements OnInit {
   }
 
   onSearch(searchDiv) {
-    searchDiv.innerText = searchDiv.innerText.length == 0 ? '*' : searchDiv.innerText.trim();
+    searchDiv.innerText = searchDiv.innerText.length === 0 ? '*' : searchDiv.innerText.trim();
     this.queryBuilder.query = searchDiv.innerText;
     this.search();
 
@@ -173,19 +173,18 @@ export class AlertsListComponent implements OnInit {
   }
 
   onResize($event) {
-    let tableWidth = this.table.nativeElement.offsetWidth;
     clearTimeout(this.colNumberTimerId);
-    this.colNumberTimerId = setTimeout(() => { this.setColumnsToDisplay(); },500)
+    this.colNumberTimerId = setTimeout(() => { this.setColumnsToDisplay(); }, 500);
   }
 
   onSort(sortEvent: SortEvent) {
-    let sortOrder = (sortEvent.sortOrder == Sort.ASC ? 'asc': 'desc');
+    let sortOrder = (sortEvent.sortOrder === Sort.ASC ? 'asc' : 'desc');
     this.queryBuilder.setSort(sortEvent.sortBy, sortOrder, this.getDataType(sortEvent.sortBy));
     this.search();
   }
 
   prepareData(configuredColumns: ColumnMetadata[], defaultColumns: ColumnMetadata[]) {
-    this.alertsColumns = (configuredColumns && configuredColumns.length > 0) ?  configuredColumns:  defaultColumns;
+    this.alertsColumns = (configuredColumns && configuredColumns.length > 0) ?  configuredColumns :  defaultColumns;
     this.setColumnsToDisplay();
   }
 
@@ -228,7 +227,7 @@ export class AlertsListComponent implements OnInit {
   }
 
   setColumnsToDisplay() {
-    let availableWidth = document.documentElement.clientWidth - (200 + (15*3)); /* screenwidth - (navPaneWidth + (paddings))*/
+    let availableWidth = document.documentElement.clientWidth - (200 + (15 * 3)); /* screenwidth - (navPaneWidth + (paddings))*/
     availableWidth = availableWidth - (55 + 25 + 25); /* availableWidth - (score + colunSelectIcon +selectCheckbox )*/
     let tWidth = 0;
     this.alertsColumnsToDisplay =  this.alertsColumns.filter(colMetaData => {
@@ -246,7 +245,7 @@ export class AlertsListComponent implements OnInit {
     });
   }
 
-  search(resetPaginationParams: boolean = true) {
+  search(resetPaginationParams = true) {
     this.selectedAlerts = [];
 
     if (resetPaginationParams) {

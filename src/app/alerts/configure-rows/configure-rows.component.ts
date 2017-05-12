@@ -62,7 +62,7 @@ export class ConfigureRowsComponent implements OnInit {
     parentElement.querySelector('.is-active').classList.remove('is-active');
     $event.target.classList.add('is-active');
 
-    this.size = parseInt($event.target.textContent.trim());
+    this.size = parseInt($event.target.textContent.trim(), 10);
     this.sizeChange.emit(this.sizeInternal);
     this.configRowsChange.emit();
   }
@@ -71,7 +71,7 @@ export class ConfigureRowsComponent implements OnInit {
     parentElement.querySelector('.is-active').classList.remove('is-active');
     $event.target.classList.add('is-active');
 
-    this.interval = parseInt($event.target.getAttribute('value').trim());
+    this.interval = parseInt($event.target.getAttribute('value').trim(), 10);
     this.intervalChange.emit(this.intervalInternal);
     this.configRowsChange.emit();
   }

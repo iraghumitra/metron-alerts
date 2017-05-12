@@ -33,7 +33,7 @@ export class MetronTableDirective implements AfterViewInit {
 
   @Output() onSort = new EventEmitter<SortEvent>();
   @Input() data: any[] = [];
-  @Input() cellSelectable: boolean = false;
+  @Input() cellSelectable = false;
   highlightColor = '#0F4450';
 
   onSortColumnChange = new EventEmitter<SortEvent>();
@@ -41,11 +41,11 @@ export class MetronTableDirective implements AfterViewInit {
   constructor(private element: ElementRef) { }
 
   private getParentTR(parent: any) {
-    while(true) {
-      if(parent == null) {
+    while (true) {
+      if (parent == null) {
         return;
       }
-      if(parent.nodeName === "TR") {
+      if (parent.nodeName === 'TR') {
         return parent;
       }
       parent = parent.parentNode;
@@ -53,7 +53,7 @@ export class MetronTableDirective implements AfterViewInit {
   }
 
   mouseover($event) {
-    if ($event.target.nodeName === "TH") {
+    if ($event.target.nodeName === 'TH') {
       return;
     }
 
@@ -67,7 +67,7 @@ export class MetronTableDirective implements AfterViewInit {
   }
 
   mouseleave($event) {
-    if ($event.target.nodeName === "TH") {
+    if ($event.target.nodeName === 'TH') {
       return;
     }
 
@@ -82,7 +82,7 @@ export class MetronTableDirective implements AfterViewInit {
 
   public setSort(sortEvent: SortEvent): void {
     this.onSortColumnChange.emit(sortEvent);
-    if (this.onSort.observers.length === 0 ){
+    if (this.onSort.observers.length === 0 ) {
       this.sort(sortEvent);
     } else {
       this.onSort.emit(sortEvent);

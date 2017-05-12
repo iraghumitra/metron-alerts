@@ -1,6 +1,6 @@
 import { NgModule } from '@angular/core';
 
-import {routing} from './save-search.routing'
+import {routing} from './save-search.routing';
 import {SharedModule} from '../../shared/shared.module';
 import {SaveSearchComponent} from './save-search.component';
 

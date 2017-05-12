@@ -22,7 +22,7 @@ export class SavedSearchesComponent implements OnInit {
               private metronDialog: MetronDialogBox) {
   }
 
-  doDeleteSearch(selectedSearch:any|SaveSearch) {
+  doDeleteSearch(selectedSearch: any|SaveSearch) {
     this.saveSearchService.deleteSearch(selectedSearch).subscribe(() => {
       this.ngOnInit();
     },
@@ -51,12 +51,12 @@ export class SavedSearchesComponent implements OnInit {
     this.preparedSavedSearches(savedSearches);
     this.preparedRecentlyAccessedSearches(savedSearches);
 
-    this.searches = savedSearches
+    this.searches = savedSearches;
   }
 
-  preparedRecentlyAccessedSearches(savedSearches:SaveSearch[]) {
-    let recentSearchNames = savedSearches.sort((s1, s2) => {return s2.lastAccessed - s1.lastAccessed}).slice(0, 5)
-                          .map(search => { return {key: search.name} });
+  preparedRecentlyAccessedSearches(savedSearches: SaveSearch[]) {
+    let recentSearchNames = savedSearches.sort((s1, s2) => { return s2.lastAccessed - s1.lastAccessed; }).slice(0, 5)
+                          .map(search => { return {key: search.name}; });
 
     this.recentSearches = {
       getName: () => {
@@ -68,8 +68,8 @@ export class SavedSearchesComponent implements OnInit {
     };
   }
 
-  preparedSavedSearches(savedSearches:SaveSearch[]) {
-    let savedSearchNames = savedSearches.map(savedSearch => { return {key: savedSearch.name} });
+  preparedSavedSearches(savedSearches: SaveSearch[]) {
+    let savedSearchNames = savedSearches.map(savedSearch => { return {key: savedSearch.name}; });
 
     this.savedSearches = {
       getName: () => {

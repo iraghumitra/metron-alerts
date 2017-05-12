@@ -5,8 +5,8 @@ import 'rxjs/add/operator/switchMap';
 import 'rxjs/add/operator/onErrorResumeNext';
 
 import {Alert} from '../model/alert';
-import {Http, Headers, RequestOptions, Response, URLSearchParams} from '@angular/http';
-import {HttpUtil} from "../utils/httpUtil";
+import {Http, Headers, RequestOptions} from '@angular/http';
+import {HttpUtil} from '../utils/httpUtil';
 import {IAppConfig} from '../app.config.interface';
 import {APP_CONFIG} from '../app.config';
 import {QueryBuilder} from '../model/query-builder';
@@ -21,29 +21,15 @@ export class AlertService {
   constructor(private http: Http, @Inject(APP_CONFIG) private config: IAppConfig, private ngZone: NgZone) {
   }
 
-  public getAll(): Observable<Alert[]> {
-    return Observable.create(observer => {
-      observer.next(Alert.getData());
-      observer.complete();
-    });
-  }
-
   public search(queryBuilder: QueryBuilder): Observable<{}> {
-    let url: string = '/search/*,-*kibana/_search';
+    let url = '/search/*,-*kibana/_search';
     return this.http.post(url, queryBuilder.getESSearchQuery(), new RequestOptions({headers: new Headers(this.defaultHeaders)}))
       .map(HttpUtil.extractData)
       .catch(HttpUtil.handleError);
   }
 
-  public mockSearch(): Observable<Alert[]> {
-    return Observable.create(observer => {
-      observer.next(Alert.getData());
-      observer.complete();
-    });
-  }
-
   public pollSearch(queryBuilder: QueryBuilder): Observable<{}> {
-    let url:string = '/search/*,-*kibana/_search';
+    let url = '/search/*,-*kibana/_search';
     return Observable.interval(this.interval * 1000).switchMap(() => {
       return this.http.post(url, queryBuilder.getESSearchQuery(), new RequestOptions({headers: new Headers(this.defaultHeaders)}))
         .map(HttpUtil.extractData)
@@ -54,14 +40,14 @@ export class AlertService {
 
   public getAlert(index: string, type: string, alertId: string): Observable<Alert> {
     return this.http.get('/search/' + index + '/' + type + '/' + alertId, new RequestOptions({headers: new Headers(this.defaultHeaders)}))
-      .map(HttpUtil.extractData)
-//      .catch(HttpUtil.handleError);
+      .map(HttpUtil.extractData);
   }
 
   public updateAlertState(alerts: Alert[], state: string, workflowId: string) {
     let request = '';
     for (let alert of alerts) {
-      request += '{ "update" : { "_index" : "' + alert._index + '", "_type" : "' + alert._type + '", "_id" : "' + alert._id + '" } }\n{ "doc": { "alert_status": "' + state + '"';
+      request += '{ "update" : { "_index" : "' + alert._index + '", "_type" : "' + alert._type + '", "_id" : "' + alert._id + '" } }\n' +
+                  '{ "doc": { "alert_status": "' + state + '"';
       if (workflowId) {
         request += ', "workflow_id": "' + workflowId + '"';
       }

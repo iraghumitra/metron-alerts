@@ -17,38 +17,12 @@ import {Filter} from './filter';
  * limitations under the License.
  */
 export class QueryBuilder {
-  private _query: string = '*';
-  private from: number = 0;
-  private size: number = 15;
-  private sort: {}[] = [{ timestamp: {order : 'desc', ignore_unmapped: true, unmapped_type: "date"} }];
+  private _query = '*';
+  private from = 0;
+  private size = 15;
+  private sort: {}[] = [{ timestamp: {order : 'desc', ignore_unmapped: true, unmapped_type: 'date'} }];
   private aggs: {};
   private _filters: Filter[] = [];
-
-  set query(value:string) {
-    value = value.replace(/\\:/g, ':');
-    this._query = value;
-    this.updateFilters();
-    this.onSearchChange();
-  }
-
-  get query():string {
-    return this._query;
-  }
-
-  get filters():Filter[] {
-    return this._filters;
-  }
-
-  addOrUpdateFilter(field: string, value: string) {
-    let filter = this._filters.find(filter => filter.field === field);
-    if (filter) {
-      filter.value = value;
-    } else {
-      this._filters.push(new Filter(field, value));
-    }
-
-    this.onSearchChange();
-  }
 
   public static fromJSON(obj: QueryBuilder): QueryBuilder {
     let queryBuilder = new QueryBuilder();
@@ -60,6 +34,32 @@ export class QueryBuilder {
     queryBuilder._filters = obj._filters;
 
     return queryBuilder;
+  }
+
+  set query(value: string) {
+    value = value.replace(/\\:/g, ':');
+    this._query = value;
+    this.updateFilters();
+    this.onSearchChange();
+  }
+
+  get query(): string {
+    return this._query;
+  }
+
+  get filters(): Filter[] {
+    return this._filters;
+  }
+
+  addOrUpdateFilter(field: string, value: string) {
+    let filter = this._filters.find(tFilter => tFilter.field === field);
+    if (filter) {
+      filter.value = value;
+    } else {
+      this._filters.push(new Filter(field, value));
+    }
+
+    this.onSearchChange();
   }
 
   generateSelect() {
@@ -82,7 +82,7 @@ export class QueryBuilder {
   }
 
   removeFilter(field: string) {
-    let filter = this._filters.find(filter => filter.field === field);
+    let filter = this._filters.find(tFilter => tFilter.field === field);
     this._filters.splice(this._filters.indexOf(filter), 1);
 
     this.onSearchChange();
@@ -92,7 +92,7 @@ export class QueryBuilder {
     this.aggs = value;
   }
 
-  setFromAndSize(from:number, size:number) {
+  setFromAndSize(from: number, size: number) {
     this.from = from;
     this.size = size;
   }
@@ -103,7 +103,7 @@ export class QueryBuilder {
       order: order,
       ignore_unmapped: true,
       unmapped_type: dataType,
-      missing: "_last"
+      missing: '_last'
     };
     this.sort = [sortQuery];
   }

@@ -3,7 +3,7 @@ import {ModuleWithProviders}  from '@angular/core';
 
 import {AlertsListComponent} from './alerts-list.component';
 
-export const routes:Routes = [
+export const routes: Routes = [
     {path: '', component: AlertsListComponent},
 ];
 

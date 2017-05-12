@@ -14,7 +14,7 @@ export interface CollapseComponentData {
 export class CollapseComponent implements OnInit {
 
   static counter = 0;
-  uniqueId: string = '';
+  uniqueId = '';
 
   @Input() data: any;
   @Input() fontSize = 14;
@@ -22,8 +22,8 @@ export class CollapseComponent implements OnInit {
   @Input() deleteOption = false;
   @Input() show = false;
 
-  @Output() onSelect = new EventEmitter<{name:string, key: string}>();
-  @Output() onDelete = new EventEmitter<{name:string, key: string}>();
+  @Output() onSelect = new EventEmitter<{name: string, key: string}>();
+  @Output() onDelete = new EventEmitter<{name: string, key: string}>();
 
   constructor() {
     this.uniqueId = 'CollapseComponent' + '_' + ++CollapseComponent.counter;
