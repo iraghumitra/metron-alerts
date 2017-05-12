@@ -10,10 +10,10 @@ import {Sort} from '../../../utils/enums';
 export class MetronSorterComponent {
 
   @Input() sortBy: string;
-  @Input() type: string = 'string';
+  @Input() type = 'string';
 
-  sortAsc: boolean = false;
-  sortDesc: boolean = false;
+  sortAsc = false;
+  sortDesc = false;
 
   constructor(private metronTable: MetronTableDirective ) {
     this.metronTable.onSortColumnChange.subscribe((event: SortEvent) => {

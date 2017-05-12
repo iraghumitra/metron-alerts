@@ -16,7 +16,7 @@
  * limitations under the License.
  */
 export class Pagination {
-  from: number = 0;
+  from = 0;
   total: number;
-  size: number = 25;
+  size = 25;
 }

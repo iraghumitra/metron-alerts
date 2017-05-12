@@ -17,7 +17,7 @@ import {QueryBuilder} from './query-builder';
  * limitations under the License.
  */
 export class SaveSearch {
-  name: string = '';
-  lastAccessed: number = 0;
+  name  = '';
+  lastAccessed = 0;
   queryBuilder: QueryBuilder;
 }

@@ -47,11 +47,11 @@ export class SaveSearchComponent implements OnInit {
   }
 
   update() {
-    let message = 'A Search with the name \'' + this.saveSearch.name +'\' already exist do you wish to override it?';
+    let message = 'A Search with the name \'' + this.saveSearch.name + '\' already exist do you wish to override it?';
     this.metronDialogBox.showConfirmationMessage(message).subscribe(result => {
       if (result) {
         this.saveSearch.queryBuilder = this.saveSearchService.queryBuilder;
-        this.saveSearchService.updateSearch(this.saveSearch).subscribe(() => {this.goBack();}, error => {});
+        this.saveSearchService.updateSearch(this.saveSearch).subscribe(() => { this.goBack(); }, error => {});
       }
     });
   }

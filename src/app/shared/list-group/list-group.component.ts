@@ -21,7 +21,7 @@ export class ListGroupComponent implements OnInit {
 
   @HostListener('click', ['$event']) onClick($event) {
     this.element.nativeElement.getElementsByClassName('active')[0].classList.remove('active');
-    if ($event.target.nodeName === "LI") {
+    if ($event.target.nodeName === 'LI') {
       $event.target.classList.add('active');
     } else {
       $event.target.parentNode.classList.add('active');

@@ -11,7 +11,6 @@ export class NavContentDirective implements OnInit {
   ngOnInit() {
     this.applyStyles();
   }
-  
   private applyStyles() {
     this.element.nativeElement.classList = 'nav-content';
   }
