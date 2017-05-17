@@ -3,7 +3,6 @@ import {Router, ActivatedRoute} from '@angular/router';
 import {Observable} from 'rxjs/Rx';
 
 import {ConfigureTableService} from '../../service/configure-table.service';
-import {ALERTS_TABLE_COLS} from '../../utils/constants';
 import {ClusterMetaDataService} from '../../service/cluster-metadata.service';
 import {ColumnMetadata} from '../../model/column-metadata';
 
@@ -61,9 +60,9 @@ export class ConfigureTableComponent implements OnInit {
     Observable.forkJoin(
       this.clusterMetaDataService.getDefaultColumns(),
       this.clusterMetaDataService.getColumnMetaData(),
-      this.configureTableService.getConfiguredTableColumns()
+        this.configureTableService.getTableMetadata()
     ).subscribe((response: any) => {
-      this.prepareData(response[0], response[1], response[2]);
+      this.prepareData(response[0], response[1], response[2].tableColumns);
     });
   }
 
@@ -99,13 +98,21 @@ export class ConfigureTableComponent implements OnInit {
     this.allColumns = allColumns.map(mData => { return new ColumnMetadataWrapper(mData, configuredColumnNames.indexOf(mData.name) > -1); });
   }
 
+  postSave() {
+    this.configureTableService.fireTableChanged();
+    this.goBack();
+  }
+
   save() {
     let selectedColumns = this.allColumns.filter((mDataWrapper: ColumnMetadataWrapper) => mDataWrapper.selected)
                           .map((mDataWrapper: ColumnMetadataWrapper) => mDataWrapper.columnMetadata);
+    this.configureTableService.saveColumnMetaData(selectedColumns).subscribe(() => {
+      this.postSave();
+    }, error => {
+      console.log('Unable to save column preferences ...');
+      this.postSave();
+    });
 
-    localStorage.setItem(ALERTS_TABLE_COLS, JSON.stringify(selectedColumns));
-    this.configureTableService.fireTableChanged();
-    this.goBack();
   }
 
   selectColumn(columns: ColumnMetadataWrapper) {

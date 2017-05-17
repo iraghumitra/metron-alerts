@@ -3,9 +3,7 @@ import {Router} from '@angular/router';
 
 import {SaveSearchService} from '../../service/save-search.service';
 import {SaveSearch} from '../../model/save-search';
-import {QueryBuilder} from '../../model/query-builder';
 import {MetronDialogBox} from '../../shared/metron-dialog-box';
-
 
 @Component({
   selector: 'app-saved-searches',
@@ -90,10 +88,10 @@ export class SavedSearchesComponent implements OnInit {
     let selectedSearch = this.searches.find(savedSearch => savedSearch.name === $event.key);
     selectedSearch.lastAccessed = new Date().getTime();
     this.saveSearchService.updateSearch(selectedSearch).subscribe(() => {
-      this.saveSearchService.fireLoadSavedSearch(QueryBuilder.fromJSON(selectedSearch.queryBuilder));
+      this.saveSearchService.fireLoadSavedSearch(SaveSearch.fromJSON(selectedSearch));
       this.goBack();
     }, error => {
-      this.saveSearchService.fireLoadSavedSearch(QueryBuilder.fromJSON(selectedSearch.queryBuilder));
+      this.saveSearchService.fireLoadSavedSearch(SaveSearch.fromJSON(selectedSearch));
       this.goBack();
     });
   }
