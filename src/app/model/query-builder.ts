@@ -24,7 +24,7 @@ export class QueryBuilder {
   private aggs: {};
   private _filters: Filter[] = [];
 
-  public static fromJSON(obj: QueryBuilder): QueryBuilder {
+  static fromJSON(obj: QueryBuilder): QueryBuilder {
     let queryBuilder = new QueryBuilder();
     queryBuilder._query = obj._query;
     queryBuilder.from = obj.from;

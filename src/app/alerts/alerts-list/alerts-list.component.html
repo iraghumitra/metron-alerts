@@ -31,7 +31,7 @@
                 <div class="btn settings">
                     <i #settingsIcon class="fa fa-sliders" aria-hidden="true"></i>
                 </div>
-                <app-configure-rows [srcElement]="settingsIcon" [(interval)]="refreshInterval" [(size)]="pagingData.size" (configRowsChange)="onConfigRowsChange()"> </app-configure-rows>
+                <app-configure-rows [srcElement]="settingsIcon" [tableMetaData]="tableMetaData" [(interval)]="refreshInterval" [(size)]="pagingData.size" (configRowsChange)="onConfigRowsChange()" > </app-configure-rows>
                 <div class="btn pause-play" (click)="onPausePlay()">
                     <i *ngIf="!pauseRefresh" class="fa fa-pause" aria-hidden="true"></i>
                     <i *ngIf="pauseRefresh" class="fa fa-play" aria-hidden="true"></i>

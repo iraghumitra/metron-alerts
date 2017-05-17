@@ -15,6 +15,8 @@ import {Sort} from '../../utils/enums';
 import {Pagination} from '../../model/pagination';
 import {SaveSearchService} from '../../service/save-search.service';
 import {RefreshInterval} from '../configure-rows/configure-rows-enums';
+import {SaveSearch} from '../../model/save-search';
+import {TableMetadata} from '../../model/table-metadata';
 
 @Component({
   selector: 'app-alerts-list',
@@ -38,6 +40,7 @@ export class AlertsListComponent implements OnInit {
   @ViewChild('table') table: ElementRef;
 
   pagingData = new Pagination();
+  tableMetaData = new TableMetadata();
   queryBuilder: QueryBuilder = new QueryBuilder();
 
   constructor(private router: Router,
@@ -63,8 +66,10 @@ export class AlertsListComponent implements OnInit {
   }
 
   addLoadSavedSearchListner() {
-    this.saveSearchService.loadSavedSearch$.subscribe(queryBuilder => {
-      this.queryBuilder = queryBuilder;
+    this.saveSearchService.loadSavedSearch$.subscribe((savedSearch: SaveSearch) => {
+      this.queryBuilder = savedSearch.queryBuilder;
+      this.prepareColumnData(savedSearch.tableColumns, []);
+      this.tryStopPolling();
       this.search();
     });
   }
@@ -81,7 +86,7 @@ export class AlertsListComponent implements OnInit {
 
   getAlertColumnNames() {
     Observable.forkJoin(
-      this.configureTableService.getConfiguredTableColumns(),
+      this.configureTableService.getTableMetadata(),
       this.clusterMetaDataService.getDefaultColumns()
     ).subscribe((response: any) => {
       this.prepareData(response[0], response[1]);
@@ -183,9 +188,16 @@ export class AlertsListComponent implements OnInit {
     this.search();
   }
 
-  prepareData(configuredColumns: ColumnMetadata[], defaultColumns: ColumnMetadata[]) {
-    this.alertsColumns = (configuredColumns && configuredColumns.length > 0) ?  configuredColumns :  defaultColumns;
+  prepareColumnData(configuredColumns: ColumnMetadata[], defaultColumns: ColumnMetadata[]) {
+    this.alertsColumns = (configuredColumns && configuredColumns.length > 0) ? configuredColumns : defaultColumns;
     this.setColumnsToDisplay();
+  }
+
+  prepareData(tableMetaData: TableMetadata, defaultColumns: ColumnMetadata[]) {
+    this.tableMetaData = tableMetaData;
+    this.pagingData.size = this.tableMetaData.size;
+    this.refreshInterval = this.tableMetaData.refreshInterval;
+    this.prepareColumnData(tableMetaData.tableColumns, defaultColumns);
   }
 
   processEscalate() {
@@ -304,7 +316,7 @@ export class AlertsListComponent implements OnInit {
 
   showSaveSearch() {
     this.saveRefreshState();
-    this.saveSearchService.setQueryBuilderToSave(this.queryBuilder);
+    this.saveSearchService.setCurrentQueryBuilderAndTableColumns(this.queryBuilder, this.alertsColumns);
     this.router.navigateByUrl('/alerts-list(dialog:save-search)');
   }
 

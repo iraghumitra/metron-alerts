@@ -1,4 +1,5 @@
 import {QueryBuilder} from './query-builder';
+import {ColumnMetadata} from './column-metadata';
 /**
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -20,4 +21,15 @@ export class SaveSearch {
   name  = '';
   lastAccessed = 0;
   queryBuilder: QueryBuilder;
+  tableColumns: ColumnMetadata[];
+
+  public static fromJSON(obj: SaveSearch): SaveSearch {
+    let saveSearch = new SaveSearch();
+    saveSearch.name = obj.name;
+    saveSearch.lastAccessed = obj.lastAccessed;
+    saveSearch.queryBuilder = QueryBuilder.fromJSON(obj.queryBuilder);
+    saveSearch.tableColumns = ColumnMetadata.fromJSON(obj.tableColumns);
+
+    return saveSearch;
+  }
 }

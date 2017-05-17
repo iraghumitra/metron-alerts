@@ -1,44 +1,50 @@
-import { Component, OnInit, Input, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
-import {PageSize, RefreshInterval} from './configure-rows-enums';
+import { Component, Input, HostListener, ElementRef, Output, EventEmitter } from '@angular/core';
+import {TableMetadata} from '../../model/table-metadata';
+import {ConfigureTableService} from '../../service/configure-table.service';
 
 @Component({
   selector: 'app-configure-rows',
   templateUrl: './configure-rows.component.html',
   styleUrls: ['./configure-rows.component.scss']
 })
-export class ConfigureRowsComponent implements OnInit {
+export class ConfigureRowsComponent  {
 
   showView = false;
-  pageSize = PageSize;
-  sizeInternal: number = PageSize.TWENTY_FIVE;
-  intervalInternal = RefreshInterval.ONE_MIN;
+  tableMetadata = new TableMetadata();
 
   @Input() srcElement: HTMLElement;
   @Output() sizeChange = new EventEmitter();
   @Output() intervalChange = new EventEmitter();
   @Output() configRowsChange = new EventEmitter();
 
-  constructor(private elementRef: ElementRef) {}
+  constructor(private elementRef: ElementRef,
+              private configureTableService: ConfigureTableService) {}
 
   @Input()
   get size() {
-    return this.sizeInternal;
+    return this.tableMetadata.size;
   }
 
   set size(val) {
-    this.sizeInternal = val;
+    this.tableMetadata.size = val;
   }
 
   @Input()
   get interval() {
-    return this.intervalInternal;
+    return this.tableMetadata.refreshInterval;
   }
 
   set interval(val) {
-    this.intervalInternal = val;
+    this.tableMetadata.refreshInterval = val;
   }
 
-  ngOnInit() {
+  @Input()
+  get tableMetaData() {
+    return this.tableMetadata;
+  }
+
+  set tableMetaData(val) {
+    this.tableMetadata = val;
   }
 
   @HostListener('document:click', ['$event', '$event.target'])
@@ -47,7 +53,8 @@ export class ConfigureRowsComponent implements OnInit {
       return;
     }
 
-    if (targetElement.contains(this.srcElement)) {
+    if (targetElement === this.srcElement) {
+      this.saveSettings();
       this.showView = !this.showView;
       return;
     }
@@ -55,6 +62,7 @@ export class ConfigureRowsComponent implements OnInit {
     const clickedInside = this.elementRef.nativeElement.contains(targetElement);
     if (!clickedInside) {
       this.showView = false;
+      this.saveSettings();
     }
   }
 
@@ -63,16 +71,25 @@ export class ConfigureRowsComponent implements OnInit {
     $event.target.classList.add('is-active');
 
     this.size = parseInt($event.target.textContent.trim(), 10);
-    this.sizeChange.emit(this.sizeInternal);
+    this.sizeChange.emit(this.tableMetadata.size);
     this.configRowsChange.emit();
   }
-
   onRefreshIntervalChange($event, parentElement) {
     parentElement.querySelector('.is-active').classList.remove('is-active');
     $event.target.classList.add('is-active');
 
+
     this.interval = parseInt($event.target.getAttribute('value').trim(), 10);
-    this.intervalChange.emit(this.intervalInternal);
+    this.intervalChange.emit(this.tableMetadata.refreshInterval);
     this.configRowsChange.emit();
+  }
+
+  saveSettings() {
+    if ( this.showView ) {
+      this.configureTableService.saveTableMetaData(this.tableMetadata).subscribe(() => {
+      }, error => {
+        console.log('Unable to save settings ....');
+      });
+    }
   }
 }
