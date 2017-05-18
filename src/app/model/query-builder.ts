@@ -62,6 +62,13 @@ export class QueryBuilder {
     this.onSearchChange();
   }
 
+  asString(): string {
+    let json = JSON.stringify(this.getESSearchQuery());
+    json = json.replace(/"/g, '').replace(/^{/, '').replace(/}$/, '');
+
+    return json;
+  }
+
   generateSelect() {
     let select = this._filters.map(filter => filter.field.replace(/:/g, '\\:') + ':' + filter.value).join(' AND ');
     return (select.length === 0) ? '*' : select;

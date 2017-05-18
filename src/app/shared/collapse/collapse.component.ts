@@ -21,6 +21,7 @@ export class CollapseComponent implements OnInit {
   @Input() titleSeperator = false;
   @Input() deleteOption = false;
   @Input() show = false;
+  @Input() strLength = 30;
 
   @Output() onSelect = new EventEmitter<{name: string, key: string}>();
   @Output() onDelete = new EventEmitter<{name: string, key: string}>();

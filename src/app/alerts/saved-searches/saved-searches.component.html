@@ -9,9 +9,9 @@
 
     <div>
       <metron-collapse [data]="recentSearches" [fontSize]="15" [titleSeperator]="true" [deleteOption]="true" [show]="true"
-                       (onSelect)="updateSearch($event)" (onDelete)="deleteSearch($event)"> </metron-collapse>
+                       (onSelect)="onSaveRecentSearchSelect($event)" (onDelete)="deleteRecentSearch($event)"> </metron-collapse>
       <metron-collapse [data]="savedSearches" [fontSize]="15" [titleSeperator]="true" [deleteOption]="true" [show]="true"
-                       (onSelect)="updateSearch($event)" (onDelete)="deleteSearch($event)"> </metron-collapse>
+                       (onSelect)="onSaveSearchSelect($event)" (onDelete)="deleteSearch($event)"> </metron-collapse>
     </div>
   </div>
 </div>

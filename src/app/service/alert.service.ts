@@ -1,4 +1,4 @@
-import {Injectable, Inject, NgZone} from '@angular/core';
+import {Injectable, Inject} from '@angular/core';
 import {Observable} from 'rxjs/Rx';
 import 'rxjs/add/observable/interval';
 import 'rxjs/add/operator/switchMap';
@@ -18,7 +18,7 @@ export class AlertService {
   defaultHeaders = {'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest'};
   types = ['bro_doc', 'snort_doc'];
 
-  constructor(private http: Http, @Inject(APP_CONFIG) private config: IAppConfig, private ngZone: NgZone) {
+  constructor(private http: Http, @Inject(APP_CONFIG) private config: IAppConfig) {
   }
 
   public search(queryBuilder: QueryBuilder): Observable<{}> {

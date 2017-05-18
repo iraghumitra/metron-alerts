@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import {Router} from '@angular/router';
+import {Observable} from 'rxjs/Rx';
 
 import {SaveSearchService} from '../../service/save-search.service';
 import {SaveSearch} from '../../model/save-search';
@@ -13,6 +14,7 @@ import {MetronDialogBox} from '../../shared/metron-dialog-box';
 export class SavedSearchesComponent implements OnInit {
 
   searches: SaveSearch[];
+  recentSearcheObj: SaveSearch[];
   savedSearches: any = {};
   recentSearches: any = {};
   constructor(private router: Router,
@@ -20,12 +22,31 @@ export class SavedSearchesComponent implements OnInit {
               private metronDialog: MetronDialogBox) {
   }
 
-  doDeleteSearch(selectedSearch: any|SaveSearch) {
-    this.saveSearchService.deleteSearch(selectedSearch).subscribe(() => {
+  doDeleteRecentSearch(selectedSearch: SaveSearch) {
+    this.saveSearchService.deleteRecentSearch(selectedSearch).subscribe(() => {
+        this.ngOnInit();
+      },
+      error => {
+        this.ngOnInit();
+      });
+  }
+  
+  doDeleteSearch(selectedSearch: SaveSearch) {
+    this.saveSearchService.deleteSavedSearch(selectedSearch).subscribe(() => {
+      this.doDeleteRecentSearch(selectedSearch);
       this.ngOnInit();
     },
     error => {
       this.ngOnInit();
+    });
+  }
+
+  deleteRecentSearch($event) {
+    let selectedSearch = this.recentSearcheObj.find(savedSearch => savedSearch.name === $event.key);
+    this.metronDialog.showConfirmationMessage('Do you wish to delete recent search ' + selectedSearch.name).subscribe((result: boolean) => {
+      if (result) {
+        this.doDeleteRecentSearch(selectedSearch);
+      }
     });
   }
 
@@ -39,22 +60,27 @@ export class SavedSearchesComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.saveSearchService.listSavedSearches().subscribe((savedSearches: SaveSearch[]) => {
-      this.prepareData(savedSearches);
+    Observable.forkJoin(
+      this.saveSearchService.listSavedSearches(),
+      this.saveSearchService.listRecentSearches()
+    ).subscribe((response: any) => {
+      this.prepareData(response[0]);
+      this.preparedRecentlyAccessedSearches(response[1]);
     });
   }
 
   prepareData(savedSearches: SaveSearch[]) {
     savedSearches = savedSearches || [];
     this.preparedSavedSearches(savedSearches);
-    this.preparedRecentlyAccessedSearches(savedSearches);
-
     this.searches = savedSearches;
   }
 
-  preparedRecentlyAccessedSearches(savedSearches: SaveSearch[]) {
-    let recentSearchNames = savedSearches.sort((s1, s2) => { return s2.lastAccessed - s1.lastAccessed; }).slice(0, 5)
-                          .map(search => { return {key: search.name}; });
+  preparedRecentlyAccessedSearches(recentSearches: SaveSearch[]) {
+    this.recentSearcheObj = recentSearches ? recentSearches : [];
+    let recentSearchNames = this.recentSearcheObj.sort((s1, s2) => { return s2.lastAccessed - s1.lastAccessed; }).slice(0, 5)
+                          .map(search => {
+                            return {key: search.getDisplayString()};
+                          });
 
     this.recentSearches = {
       getName: () => {
@@ -84,15 +110,15 @@ export class SavedSearchesComponent implements OnInit {
     return false;
   }
 
-  updateSearch($event) {
+  onSaveRecentSearchSelect($event) {
+    let selectedSearch = this.recentSearcheObj.find(savedSearch =>  savedSearch.name === $event.key);
+    this.saveSearchService.fireLoadSavedSearch(SaveSearch.fromJSON(selectedSearch));
+    this.goBack();
+  }
+
+  onSaveSearchSelect($event) {
     let selectedSearch = this.searches.find(savedSearch => savedSearch.name === $event.key);
-    selectedSearch.lastAccessed = new Date().getTime();
-    this.saveSearchService.updateSearch(selectedSearch).subscribe(() => {
-      this.saveSearchService.fireLoadSavedSearch(SaveSearch.fromJSON(selectedSearch));
-      this.goBack();
-    }, error => {
-      this.saveSearchService.fireLoadSavedSearch(SaveSearch.fromJSON(selectedSearch));
-      this.goBack();
-    });
+    this.saveSearchService.fireLoadSavedSearch(SaveSearch.fromJSON(selectedSearch));
+    this.goBack();
   }
 }

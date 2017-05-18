@@ -15,5 +15,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+export const ALERTS_LAST_FIVE_SAVED_SEARCH = 'metron-alerts-last-five-saved-seacrh';
 export const ALERTS_SAVED_SEARCH = 'metron-alerts-saved-seacrh';
 export const ALERTS_TABLE_METADATA = 'metron-alerts-table-metadata';

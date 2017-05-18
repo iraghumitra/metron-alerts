@@ -10,7 +10,7 @@
     <li *ngFor="let data of data.getData()" class="list-group-item justify-content-between anchor"
         [ngClass]="{'font-size-14' : fontSize === 14, 'font-size-15' : fontSize === 15}"
         (click)="onSelectClick(data.key)">
-      {{ data.key | centerEllipses:30 }}
+      {{ data.key | centerEllipses: strLength }}
       <span *ngIf="data.doc_count" class="badge badge-default badge-pill"> {{ data.doc_count }} </span>
       <span *ngIf="deleteOption" class="delete" (click)="onDeleteClick($event, data.key)"> </span>
     </li>

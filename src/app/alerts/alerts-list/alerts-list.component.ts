@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {Router, NavigationStart} from '@angular/router';
-import {Observable} from 'rxjs/Rx';
+import {Observable, Subscriber, Subscription} from 'rxjs/Rx';
 
 import {Alert} from '../../model/alert';
 import {AlertService} from '../../service/alert.service';
@@ -33,7 +33,7 @@ export class AlertsListComponent implements OnInit {
   alerts: any[] = [];
   colNumberTimerId: number;
   refreshInterval = RefreshInterval.ONE_MIN;
-  refreshTimer: any;
+  refreshTimer: Subscription;
   pauseRefresh = false;
   lastPauseRefreshValue = false;
 
@@ -69,8 +69,26 @@ export class AlertsListComponent implements OnInit {
     this.saveSearchService.loadSavedSearch$.subscribe((savedSearch: SaveSearch) => {
       this.queryBuilder = savedSearch.queryBuilder;
       this.prepareColumnData(savedSearch.tableColumns, []);
-      this.tryStopPolling();
-      this.search();
+      this.search(true, savedSearch);
+    });
+  }
+
+  calcColumnsToDisplay() {
+    let availableWidth = document.documentElement.clientWidth - (200 + (15 * 3)); /* screenwidth - (navPaneWidth + (paddings))*/
+    availableWidth = availableWidth - (55 + 25 + 25); /* availableWidth - (score + colunSelectIcon +selectCheckbox )*/
+    let tWidth = 0;
+    this.alertsColumnsToDisplay =  this.alertsColumns.filter(colMetaData => {
+      if (colMetaData.type.toUpperCase() === 'DATE') {
+        tWidth += 140;
+      } else if (colMetaData.type.toUpperCase() === 'IP') {
+        tWidth += 120;
+      } else if (colMetaData.type.toUpperCase() === 'BOOLEAN') {
+        tWidth += 50;
+      } else {
+        tWidth += 130;
+      }
+
+      return tWidth < availableWidth;
     });
   }
 
@@ -132,10 +150,11 @@ export class AlertsListComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.search();
     this.getAlertColumnNames();
     this.addAlertColChangedListner();
     this.addLoadSavedSearchListner();
+
+    this.search();
   }
 
   onClear(searchDiv) {
@@ -159,7 +178,6 @@ export class AlertsListComponent implements OnInit {
 
   onConfigRowsChange() {
     this.alertsService.interval = this.refreshInterval;
-    this.tryStopPolling();
     this.search();
   }
 
@@ -179,7 +197,7 @@ export class AlertsListComponent implements OnInit {
 
   onResize($event) {
     clearTimeout(this.colNumberTimerId);
-    this.colNumberTimerId = setTimeout(() => { this.setColumnsToDisplay(); }, 500);
+    this.colNumberTimerId = setTimeout(() => { this.calcColumnsToDisplay(); }, 500);
   }
 
   onSort(sortEvent: SortEvent) {
@@ -190,13 +208,15 @@ export class AlertsListComponent implements OnInit {
 
   prepareColumnData(configuredColumns: ColumnMetadata[], defaultColumns: ColumnMetadata[]) {
     this.alertsColumns = (configuredColumns && configuredColumns.length > 0) ? configuredColumns : defaultColumns;
-    this.setColumnsToDisplay();
+    this.calcColumnsToDisplay();
   }
 
   prepareData(tableMetaData: TableMetadata, defaultColumns: ColumnMetadata[]) {
     this.tableMetaData = tableMetaData;
     this.pagingData.size = this.tableMetaData.size;
     this.refreshInterval = this.tableMetaData.refreshInterval;
+
+    this.updateConfigRowsSettings();
     this.prepareColumnData(tableMetaData.tableColumns, defaultColumns);
   }
 
@@ -231,6 +251,11 @@ export class AlertsListComponent implements OnInit {
     this.search();
   }
 
+  restoreRefreshState() {
+    this.pauseRefresh = this.lastPauseRefreshValue;
+    this.tryStartPolling();
+  }
+
   selectAllRows($event) {
     this.selectedAlerts = [];
     if ($event.target.checked) {
@@ -238,31 +263,23 @@ export class AlertsListComponent implements OnInit {
     }
   }
 
-  setColumnsToDisplay() {
-    let availableWidth = document.documentElement.clientWidth - (200 + (15 * 3)); /* screenwidth - (navPaneWidth + (paddings))*/
-    availableWidth = availableWidth - (55 + 25 + 25); /* availableWidth - (score + colunSelectIcon +selectCheckbox )*/
-    let tWidth = 0;
-    this.alertsColumnsToDisplay =  this.alertsColumns.filter(colMetaData => {
-      if (colMetaData.type.toUpperCase() === 'DATE') {
-        tWidth += 140;
-      } else if (colMetaData.type.toUpperCase() === 'IP') {
-        tWidth += 120;
-      } else if (colMetaData.type.toUpperCase() === 'BOOLEAN') {
-        tWidth += 50;
-      } else {
-        tWidth += 130;
-      }
-
-      return tWidth < availableWidth;
-    });
-  }
-
-  search(resetPaginationParams = true) {
+  search(resetPaginationParams = true, savedSearch?: SaveSearch) {
     this.selectedAlerts = [];
 
     if (resetPaginationParams) {
       this.pagingData.from = 0;
       this.queryBuilder.setFromAndSize(this.pagingData.from, this.pagingData.size);
+    }
+
+    if (this.queryBuilder.query !== '*') {
+      if (!savedSearch) {
+        savedSearch = new SaveSearch();
+        savedSearch.queryBuilder = this.queryBuilder;
+        savedSearch.tableColumns = this.alertsColumns;
+        savedSearch.name = savedSearch.getDisplayString();
+      }
+
+      this.saveSearchService.saveAsRecentSearches(savedSearch).subscribe(()=>{});
     }
 
     this.alertsService.search(this.queryBuilder).subscribe(results => {
@@ -304,10 +321,6 @@ export class AlertsListComponent implements OnInit {
     this.tryStopPolling();
   }
 
-  restoreRefreshState() {
-    this.pauseRefresh = this.lastPauseRefreshValue;
-    this.tryStartPolling();
-  }
 
   showSavedSearches() {
     this.saveRefreshState();
@@ -322,6 +335,7 @@ export class AlertsListComponent implements OnInit {
 
   tryStartPolling() {
     if (!this.pauseRefresh) {
+      this.tryStopPolling();
       this.refreshTimer = this.alertsService.pollSearch(this.queryBuilder).subscribe(results => {
         this.setData(results);
       });
@@ -329,9 +343,14 @@ export class AlertsListComponent implements OnInit {
   }
 
   tryStopPolling() {
-    if (this.refreshTimer) {
+    if (this.refreshTimer && !this.refreshTimer.closed) {
       this.refreshTimer.unsubscribe();
     }
+  }
+
+  updateConfigRowsSettings() {
+    this.alertsService.interval = this.refreshInterval;
+    this.queryBuilder.setFromAndSize(this.pagingData.from, this.pagingData.size);
   }
 
   updateSelectedAlertStatus(status: string) {

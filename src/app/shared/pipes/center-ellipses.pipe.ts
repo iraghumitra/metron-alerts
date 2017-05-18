@@ -16,6 +16,10 @@ export class CenterEllipsesPipe implements PipeTransform {
         return '';
       }
 
+      if (!length) {
+        return value;
+      }
+
       return value.length > tLimit
         ? value.substring(0, tLimit / 2) + this.trail + value.substring(value.length - tLimit / 2, value.length)
         : value;
