@@ -74,7 +74,9 @@
                     <tbody>
                     <tr *ngFor="let alert of alerts" (click)="showDetails($event, alert)" [ngClass]="{'selected' : selectedAlerts.indexOf(alert) != -1}">
                         <td (click)="addFilter('score', alert.score)"> <div appAlertSeverity [severity]="alert.score"> {{ alert._score ? alert._score : '-' }} </div> </td>
-                        <td *ngFor="let column of alertsColumnsToDisplay" #cell> <a (click)="onAddFilter(column.name, getValue(alert, column, false))" title="{{getValue(alert, column, true)}}"> {{ getValue(alert, column, true) | centerEllipses:20:cell }} </a> </td>
+                        <td *ngFor="let column of alertsColumnsToDisplay" #cell>
+                            <a (click)="onAddFilter(column.name, getValue(alert, column, false))" title="{{getValue(alert, column, true)}}" style="color:#689AA9"> {{ getValue(alert, column, true) | centerEllipses:20:cell }} </a>
+                        </td>
                         <td></td>
                         <td><input id="{{ alert.alertId }}" class="fontawesome-checkbox" type="checkbox" name="{{alert.alertId}}" (click)="selectRow($event, alert)" [checked]="selectedAlerts.indexOf(alert) != -1"><label attr.for="{{ alert.alertId }}"></label></td>
                     </tr>

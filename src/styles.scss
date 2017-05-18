@@ -32,6 +32,9 @@ button {
     tr:last-child td {
       border-bottom: 1px solid $table-border-color;
     }
+    td a {
+      border: 1px solid transparent;
+    }
 }
 
 form
