@@ -32,4 +32,8 @@ export class SaveSearch {
 
     return saveSearch;
   }
+
+  getDisplayString() {
+    return (this.name && this.name.length > 0) ? this.name : this.queryBuilder.generateSelect();
+  }
 }

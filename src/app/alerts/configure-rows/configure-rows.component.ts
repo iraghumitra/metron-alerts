@@ -54,7 +54,6 @@ export class ConfigureRowsComponent  {
     }
 
     if (targetElement === this.srcElement) {
-      this.saveSettings();
       this.showView = !this.showView;
       return;
     }
@@ -62,7 +61,6 @@ export class ConfigureRowsComponent  {
     const clickedInside = this.elementRef.nativeElement.contains(targetElement);
     if (!clickedInside) {
       this.showView = false;
-      this.saveSettings();
     }
   }
 
@@ -73,6 +71,7 @@ export class ConfigureRowsComponent  {
     this.size = parseInt($event.target.textContent.trim(), 10);
     this.sizeChange.emit(this.tableMetadata.size);
     this.configRowsChange.emit();
+    this.saveSettings();
   }
   onRefreshIntervalChange($event, parentElement) {
     parentElement.querySelector('.is-active').classList.remove('is-active');
@@ -82,6 +81,7 @@ export class ConfigureRowsComponent  {
     this.interval = parseInt($event.target.getAttribute('value').trim(), 10);
     this.intervalChange.emit(this.tableMetadata.refreshInterval);
     this.configRowsChange.emit();
+    this.saveSettings();
   }
 
   saveSettings() {
