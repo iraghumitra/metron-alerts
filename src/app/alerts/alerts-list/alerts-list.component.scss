@@ -218,3 +218,62 @@ $searchbox-height: 40px;
 .table-wrapper {
   min-height: calc(100vh - 250px);
 }
+
+.ace_editor {
+  background: $mine-shaft-1;
+  border: 1px solid $tundora;
+}
+
+:host /deep/ .ace-monokai {
+  .ace_keyword {
+    color: $mantis;
+  }
+  .ace_line {
+    color: $sky-blue;
+  }
+  .ace_operator {
+    color: $silver;
+  }
+  .ace_constant.ace_character {
+    color: $mantis;
+  }
+  .ace_value {
+    height: 100%;
+    cursor: pointer;
+    pointer-events: auto;
+    display: inline-block;
+    border: 1px solid transparent;
+  }
+  .ace_keyword {
+    height: 100%;
+    cursor: pointer;
+    pointer-events: auto;
+    display: inline-block;
+    border: 1px solid transparent;
+  }
+
+  .ace_value.active {
+    border : 1px solid #1B596C;
+    border-left : none;
+    height: 18px;
+    display: inline-block;
+    background: #0F4450;
+    cursor: pointer;
+    padding-right: 5px;
+    //font-size: 0.7rem;
+  }
+
+  .ace_keyword.active {
+    border : 1px solid #1B596C;
+    border-right : none;
+    height: 18px;
+    display: inline-block;
+    background: #0F4450;
+    cursor: pointer;
+    //font-size: 0.7rem;
+  }
+
+  .fa-times {
+    padding-left: 4px;
+  }
+}

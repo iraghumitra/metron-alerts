@@ -9,6 +9,9 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es5",
+    "files": [
+      "node_modules/@types/ace/index.d.ts"
+    ],
     "typeRoots": [
       "node_modules/@types"
     ],

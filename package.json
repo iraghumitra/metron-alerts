@@ -2,6 +2,9 @@
   "name": "metron-alerts",
   "version": "0.0.0",
   "license": "MIT",
+  "config": {
+    "node_ace": "node_modules/ace-builds/src-min-noconflict/"
+  },
   "angular-cli": {},
   "scripts": {
     "build": "./node_modules/@angular/cli/bin/ng build -prod",
@@ -9,7 +12,9 @@
     "lint": "tslint \"src/**/*.ts\"",
     "test": "./node_modules/@angular/cli/bin/ng test --watch=false",
     "pree2e": "webdriver-manager update",
-    "e2e": "protractor"
+    "e2e": "protractor",
+    "copy-ace": "cp -f $npm_package_config_node_ace/mode-lucene.js  $npm_package_config_node_ace/theme-monokai.js src/assets/ace",
+    "postinstall": "npm run copy-ace"
   },
   "private": true,
   "dependencies": {
@@ -21,7 +26,9 @@
     "@angular/platform-browser": "^4.0.0",
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
+    "ace-builds": "^1.2.6",
     "bootstrap": "^4.0.0-alpha.6",
+    "brace": "^0.10.0",
     "core-js": "^2.4.1",
     "font-awesome": "^4.7.0",
     "rxjs": "^5.1.0",
@@ -31,6 +38,7 @@
   "devDependencies": {
     "@angular/cli": "1.0.0",
     "@angular/compiler-cli": "^4.0.0",
+    "@types/ace": "0.0.32",
     "@types/bootstrap": "^3.3.32",
     "@types/jasmine": "2.5.38",
     "@types/node": "~6.0.60",

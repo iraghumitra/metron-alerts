@@ -163,9 +163,9 @@ export class AlertsListComponent implements OnInit {
     this.search();
   }
 
-  onSearch(searchDiv) {
-    searchDiv.innerText = searchDiv.innerText.length === 0 ? '*' : searchDiv.innerText.trim();
-    this.queryBuilder.query = searchDiv.innerText;
+  onSearch($event) {
+    // searchDiv.innerText = searchDiv.innerText.length === 0 ? '*' : searchDiv.innerText.trim();
+    this.queryBuilder.query = $event;
     this.search();
 
     return false;

@@ -22,6 +22,7 @@ import {AlertSeverityDirective} from './alert-severity.directive';
 import {MetronTableDirective} from './metron-table/metron-table.directive';
 import { NavContentDirective } from './directives/nav-content.directive';
 import { CenterEllipsesPipe } from './pipes/center-ellipses.pipe';
+import { AceEditorDirective } from './directives/ace-editor.directive';
 
 @NgModule({
   imports:  [
@@ -31,7 +32,8 @@ import { CenterEllipsesPipe } from './pipes/center-ellipses.pipe';
     AlertSeverityDirective,
     MetronTableDirective,
     NavContentDirective,
-    CenterEllipsesPipe
+    CenterEllipsesPipe,
+    AceEditorDirective
   ],
   exports:  [
     CommonModule,
@@ -39,7 +41,8 @@ import { CenterEllipsesPipe } from './pipes/center-ellipses.pipe';
     AlertSeverityDirective,
     MetronTableDirective,
     NavContentDirective,
-    CenterEllipsesPipe
+    CenterEllipsesPipe,
+    AceEditorDirective
   ]
 })
 export class SharedModule { }
