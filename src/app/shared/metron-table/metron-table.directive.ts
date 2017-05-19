@@ -34,7 +34,9 @@ export class MetronTableDirective implements AfterViewInit {
   @Output() onSort = new EventEmitter<SortEvent>();
   @Input() data: any[] = [];
   @Input() cellSelectable = false;
+  rowhighlightColor = '#333333';
   highlightColor = '#0F4450';
+  border = '1px solid #1B596C';
 
   onSortColumnChange = new EventEmitter<SortEvent>();
 
@@ -57,12 +59,13 @@ export class MetronTableDirective implements AfterViewInit {
       return;
     }
 
-    if (this.cellSelectable) {
-        $event.target.parentElement.style.backgroundColor = this.highlightColor;
+    if (this.cellSelectable && $event.target.nodeName === 'A') {
+        $event.target.style.backgroundColor = this.highlightColor;
+        $event.target.style.border = this.border;
 
     } else {
         let parent = this.getParentTR($event.target);
-        parent.style.backgroundColor = this.highlightColor;
+        parent.style.backgroundColor = this.rowhighlightColor;
     }
   }
 
@@ -71,7 +74,11 @@ export class MetronTableDirective implements AfterViewInit {
       return;
     }
 
-    $event.target.parentElement.style.backgroundColor = '';
+    $event.target.style.border = '';
+    $event.target.style.backgroundColor = '';
+
+    let parent = this.getParentTR($event.target);
+    parent.style.backgroundColor = '';
   }
 
   ngAfterViewInit() {
