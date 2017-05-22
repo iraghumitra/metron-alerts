@@ -2,9 +2,6 @@
   "name": "metron-alerts",
   "version": "0.0.0",
   "license": "MIT",
-  "config": {
-    "node_ace": "node_modules/ace-builds/src-min-noconflict/"
-  },
   "angular-cli": {},
   "scripts": {
     "build": "./node_modules/@angular/cli/bin/ng build -prod",
@@ -12,9 +9,7 @@
     "lint": "tslint \"src/**/*.ts\"",
     "test": "./node_modules/@angular/cli/bin/ng test --watch=false",
     "pree2e": "webdriver-manager update",
-    "e2e": "protractor",
-    "copy-ace": "cp -f $npm_package_config_node_ace/mode-lucene.js  $npm_package_config_node_ace/theme-monokai.js src/assets/ace",
-    "postinstall": "npm run copy-ace"
+    "e2e": "protractor"
   },
   "private": true,
   "dependencies": {
