@@ -30,7 +30,6 @@ export class SavedSearchesComponent implements OnInit {
         this.ngOnInit();
       });
   }
-  
   doDeleteSearch(selectedSearch: SaveSearch) {
     this.saveSearchService.deleteSavedSearch(selectedSearch).subscribe(() => {
       this.doDeleteRecentSearch(selectedSearch);

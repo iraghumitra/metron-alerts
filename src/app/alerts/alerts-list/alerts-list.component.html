@@ -6,12 +6,12 @@
                     <span class="input-group-btn">
                         <button class="btn btn-secondary btn-saved-searches" type="button" (click)="showSavedSearches()">Searches</button>
                     </span>
-                    <div #search contenteditable="true" class="form-control" placeholder="Search Alerts" [innerHTML]="queryBuilder.query" (keydown.enter)="onSearch(search)"> </div>
+                    <div appAceEditor style="width:100%;" placeholder="Search Alerts" [text]="queryBuilder.query" (textChanged)="onSearch($event)"> </div>
                     <span class="input-group-btn">
-                        <button class="btn btn-secondary btn-search-clear" type="button" (click)="onClear(search)"></button>
+                        <button class="btn btn-secondary btn-search-clear" type="button" (click)="onClear()"></button>
                     </span>
                     <span class="input-group-btn">
-                        <button class="btn btn-secondary btn-search" type="button" (click)="onSearch(search)"></button>
+                        <button class="btn btn-secondary btn-search" type="button" (click)="onSearch(alertSearchDirective.getSeacrhText())"></button>
                     </span>
                 </div>
             </div>
@@ -24,7 +24,6 @@
     <div class="mrow">
         <div class="col-md-9 px-0">
             <span class="col-form-label-lg"> Alerts ({{alerts.length}} of {{pagingData.total}}) </span>
-            <button *ngFor="let filter of queryBuilder.filters" class="filter-button btn btn-primary" (click)="removeFilter(filter.field)" type="button">x {{ filter.field }}</button>
         </div>
         <div class="col-md-3 px-0">
             <div class="pull-right" style="position: relative; display: block;">
@@ -62,7 +61,7 @@
         </div>
         <div class="col-sm-12 col-offset-200">
             <div class="table-wrapper">
-                <table class="table table-sm" metron-config-table [data]="alerts" [cellSelectable]="true" (onSort)="onSort($event)" style="white-space: nowrap;" (window:resize)="onResize($event)" #table>
+                <table class="table table-sm" metron-config-table [data]="alerts" [cellSelectable]="true" (onSort)="onSort($event)" style="white-space: nowrap;" (window:resize)="onResize()" #table>
                     <thead>
                     <tr>
                         <th style="width:55px"> <metron-config-sorter [type]="'number'" [sortBy]="'_score'"> score </metron-config-sorter> </th>
