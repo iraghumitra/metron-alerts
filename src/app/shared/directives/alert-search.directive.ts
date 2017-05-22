@@ -59,12 +59,6 @@ export class AlertSearchDirective implements AfterViewInit, OnChanges {
     });
   }
 
-  // set text(value) {
-  //   this.editor.setValue(value);
-  //   this.editor.clearSelection();
-  //   this.editor.focus();
-  // }
-
   private  getTextTillOperator(valueElement) {
     let str = valueElement ? valueElement.textContent : '';
 
