@@ -33,4 +33,13 @@ export class MetadataUtil {
     columnMetadata.push(new ColumnMetadata('_id', 'string'));
     return columnMetadata;
   }
+
+  public static extractESErrorMessage(error: any): any {
+    let message = error.error.reason;
+    error.error.root_cause.map(cause => {
+      message += '\n' + cause.index + ': ' + cause.reason;
+    });
+
+    return message;
+  }
 }

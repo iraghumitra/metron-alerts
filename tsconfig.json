@@ -12,9 +12,6 @@
     "files": [
       "node_modules/@types/ace/index.d.ts"
     ],
-    "typeRoots": [
-      "node_modules/@types"
-    ],
     "lib": [
       "es2016",
       "dom"

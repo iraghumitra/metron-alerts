@@ -1,6 +1,6 @@
 import {Component, OnInit, ViewChild, ElementRef} from '@angular/core';
 import {Router, NavigationStart} from '@angular/router';
-import {Observable, Subscriber, Subscription} from 'rxjs/Rx';
+import {Observable, Subscription} from 'rxjs/Rx';
 
 import {Alert} from '../../model/alert';
 import {AlertService} from '../../service/alert.service';
@@ -17,6 +17,9 @@ import {SaveSearchService} from '../../service/save-search.service';
 import {RefreshInterval} from '../configure-rows/configure-rows-enums';
 import {SaveSearch} from '../../model/save-search';
 import {TableMetadata} from '../../model/table-metadata';
+import {MetronDialogBox, DialogType} from '../../shared/metron-dialog-box';
+import {MetadataUtil} from '../../utils/metadata-utils';
+import {AlertSearchDirective} from '../../shared/directives/alert-search.directive';
 
 @Component({
   selector: 'app-alerts-list',
@@ -38,6 +41,7 @@ export class AlertsListComponent implements OnInit {
   lastPauseRefreshValue = false;
 
   @ViewChild('table') table: ElementRef;
+  @ViewChild(AlertSearchDirective) alertSearchDirective: AlertSearchDirective;
 
   pagingData = new Pagination();
   tableMetaData = new TableMetadata();
@@ -48,7 +52,8 @@ export class AlertsListComponent implements OnInit {
               private configureTableService: ConfigureTableService,
               private workflowService: WorkflowService,
               private clusterMetaDataService: ClusterMetaDataService,
-              private saveSearchService: SaveSearchService) {
+              private saveSearchService: SaveSearchService,
+              private metronDialogBox: MetronDialogBox) {
     router.events.subscribe(event => {
       if (event instanceof NavigationStart && event.url === '/alerts-list') {
         this.selectedAlerts = [];
@@ -157,14 +162,12 @@ export class AlertsListComponent implements OnInit {
     this.search();
   }
 
-  onClear(searchDiv) {
-    searchDiv.innerText = '*';
-    this.queryBuilder.query = searchDiv.innerText;
+  onClear() {
+    this.queryBuilder.query = '';
     this.search();
   }
 
   onSearch($event) {
-    // searchDiv.innerText = searchDiv.innerText.length === 0 ? '*' : searchDiv.innerText.trim();
     this.queryBuilder.query = $event;
     this.search();
 
@@ -195,7 +198,7 @@ export class AlertsListComponent implements OnInit {
     }
   }
 
-  onResize($event) {
+  onResize() {
     clearTimeout(this.colNumberTimerId);
     this.colNumberTimerId = setTimeout(() => { this.calcColumnsToDisplay(); }, 500);
   }
@@ -279,11 +282,14 @@ export class AlertsListComponent implements OnInit {
         savedSearch.name = savedSearch.getDisplayString();
       }
 
-      this.saveSearchService.saveAsRecentSearches(savedSearch).subscribe(()=>{});
+      this.saveSearchService.saveAsRecentSearches(savedSearch).subscribe(() => {});
     }
 
     this.alertsService.search(this.queryBuilder).subscribe(results => {
       this.setData(results);
+    }, error => {
+      this.setData({hits: {hits: [], total: 0}});
+      this.metronDialogBox.showConfirmationMessage(MetadataUtil.extractESErrorMessage(error), DialogType.Error);
     });
 
     this.tryStartPolling();

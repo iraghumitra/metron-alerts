@@ -18,11 +18,11 @@
 import { NgModule }            from '@angular/core';
 import { CommonModule }        from '@angular/common';
 import { FormsModule }         from '@angular/forms';
-import {AlertSeverityDirective} from './alert-severity.directive';
-import {MetronTableDirective} from './metron-table/metron-table.directive';
+import { AlertSeverityDirective } from './alert-severity.directive';
+import { MetronTableDirective } from './metron-table/metron-table.directive';
 import { NavContentDirective } from './directives/nav-content.directive';
 import { CenterEllipsesPipe } from './pipes/center-ellipses.pipe';
-import { AceEditorDirective } from './directives/ace-editor.directive';
+import { AlertSearchDirective } from './directives/alert-search.directive';
 
 @NgModule({
   imports:  [
@@ -33,7 +33,7 @@ import { AceEditorDirective } from './directives/ace-editor.directive';
     MetronTableDirective,
     NavContentDirective,
     CenterEllipsesPipe,
-    AceEditorDirective
+    AlertSearchDirective
   ],
   exports:  [
     CommonModule,
@@ -42,7 +42,7 @@ import { AceEditorDirective } from './directives/ace-editor.directive';
     MetronTableDirective,
     NavContentDirective,
     CenterEllipsesPipe,
-    AceEditorDirective
+    AlertSearchDirective
   ]
 })
 export class SharedModule { }

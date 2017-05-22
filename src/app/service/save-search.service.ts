@@ -104,10 +104,10 @@ export class SaveSearchService {
       savedSearches = savedSearches.map(tSaveSeacrh => SaveSearch.fromJSON(tSaveSeacrh));
 
       if (savedSearches.length  === 0) {
-        savedSearches.push(saveSearch)
+        savedSearches.push(saveSearch);
       } else {
-        let min = 0, index = -1, found = false;
-        for( let tSaveSearch of savedSearches) {
+        let found = false;
+        for ( let tSaveSearch of savedSearches) {
           if (saveSearch.name === tSaveSearch.name) {
             tSaveSearch.lastAccessed = new Date().getTime();
             found = true;
@@ -116,7 +116,7 @@ export class SaveSearchService {
         }
         if (!found ) {
           if (savedSearches.length < 5) {
-            savedSearches.push(saveSearch)
+            savedSearches.push(saveSearch);
           } else {
             savedSearches.sort((s1, s2) => s1.lastAccessed - s2.lastAccessed).shift();
             savedSearches.push(saveSearch);

@@ -17,10 +17,23 @@
  */
 import {EventEmitter}     from '@angular/core';
 
+export enum DialogType {
+  Confirmation, Error
+};
+
 export class MetronDialogBox {
+  private static dialogType = DialogType;
 
-  private createDialogBox(message: string, title: string) {
+  private getCancelButton(type: DialogType): string {
+    if (type === DialogType.Confirmation) {
+      return `<button type="button" class="btn btn-mine_shaft_2" data-dismiss="modal">Cancel</button>`;
+    }
 
+    return '';
+  }
+
+  private createDialogBox(message: string, type: DialogType) {
+    let cancelButtonHTML = this.getCancelButton(type);
     let html = `<div class="metron-dialog modal fade"  data-backdrop="static" >
                   <div class="modal-dialog modal-sm" role="document">
                     <div class="modal-content">
@@ -28,15 +41,15 @@ export class MetronDialogBox {
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"> 
                             <span aria-hidden="true">&times;</span> 
                         </button>
-                        <span class="modal-title"><b>` + title + `</b></span>
+                        <span class="modal-title"><b>` + MetronDialogBox.dialogType[type] + `</b></span>
                       </div>
                       <div class="modal-body">
                         <p>` +  message + `</p>
                       </div>
                       <div class="modal-footer">
-                        <button type="button" class="btn btn-all_ports">OK</button>
-                        <button type="button" class="btn btn-mine_shaft_2" data-dismiss="modal">Cancel</button>
-                      </div>
+                        <button type="button" class="btn btn-all_ports">OK</button>`
+                        + cancelButtonHTML +
+                      `</div>
                     </div>
                   </div>
                 </div>`;
@@ -49,9 +62,10 @@ export class MetronDialogBox {
     return element;
   }
 
-  public showConfirmationMessage(message: string): EventEmitter<boolean> {
+  public showConfirmationMessage(message: string, dialogType = DialogType.Confirmation): EventEmitter<boolean> {
+    message = message.replace(/\n/g, '<br>');
     let eventEmitter = new EventEmitter<boolean>();
-    let element = this.createDialogBox(message, 'Confirmation');
+    let element = this.createDialogBox(message, dialogType);
 
     $(element).find('.metron-dialog').modal('show');
 
